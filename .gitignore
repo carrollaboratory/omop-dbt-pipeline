@@ -1,0 +1,7 @@
+logs
+.csv  # To allow a specific csv 'add' it to git individually.
+
+!.gitignore
+
+!dbt_project/_pipeline_data/static
+!dbt_project/_pipeline_data/static/**/*

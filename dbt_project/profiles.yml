@@ -1,0 +1,6 @@
+omop-dbt-pipeline:
+  target: dev
+  outputs:
+    dev:
+      type: duckdb
+      path: /tmp/dbt.duckdb

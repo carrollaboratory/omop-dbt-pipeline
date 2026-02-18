@@ -1,0 +1,22 @@
+name: base
+version: 1.0.0
+profile: omop-dbt-pipeline
+model-paths:
+- models
+macro-paths:
+- macros
+seed-paths:
+- seeds
+snapshot-paths:
+- snapshots
+clean-targets:
+- target
+- dbt_packages
+
+vars:
+  dbt_date:time_zone: 'America/Chicago'
+
+models:
+  +schema: main
+  +materialized: table
+ 
