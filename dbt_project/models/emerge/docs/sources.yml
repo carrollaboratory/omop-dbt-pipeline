@@ -1,0 +1,120 @@
+sources:
+- name: consort_gira
+  schema: study
+  tables:
+  - name: emerge_person_ex_release_20260123
+    description: Source table for emerge_person_ex_release_20260123.
+    columns:
+    - name: EMERGE_ID
+      description: '{{ doc("emerge_person_ex_release_20260123_emerge_id") }}'
+    - name: WITHDRAWAL_STATUS
+      description: '{{ doc("emerge_person_ex_release_20260123_withdrawal_status")
+        }}'
+    - name: YEAR_OF_BIRTH
+      description: '{{ doc("emerge_person_ex_release_20260123_year_of_birth") }}'
+    - name: GENDER_CONCEPT_ID
+      description: '{{ doc("emerge_person_ex_release_20260123_gender_concept_id")
+        }}'
+    - name: RACE_CONCEPT_ID
+      description: '{{ doc("emerge_person_ex_release_20260123_race_concept_id") }}'
+    - name: ETHNICITY_CONCEPT_ID
+      description: '{{ doc("emerge_person_ex_release_20260123_ethnicity_concept_id")
+        }}'
+  - name: emerge_measurement_ex_release_20260127
+    description: Source table for emerge_measurement_ex_release_20260127.
+    columns:
+    - name: EMERGE_ID
+      description: '{{ doc("emerge_measurement_ex_release_20260127_emerge_id") }}'
+    - name: MEASUREMENT_CONCEPT_ID
+      description: '{{ doc("emerge_measurement_ex_release_20260127_measurement__5f480161")
+        }}'
+    - name: VALUE_AS_NUMBER
+      description: '{{ doc("emerge_measurement_ex_release_20260127_value_as_number")
+        }}'
+    - name: VALUE_AS_TEXT
+      description: '{{ doc("emerge_measurement_ex_release_20260127_value_as_text")
+        }}'
+    - name: RANGE_LOW
+      description: '{{ doc("emerge_measurement_ex_release_20260127_range_low") }}'
+    - name: RANGE_HIGH
+      description: '{{ doc("emerge_measurement_ex_release_20260127_range_high") }}'
+    - name: RANGE_FLAG
+      description: '{{ doc("emerge_measurement_ex_release_20260127_range_flag") }}'
+    - name: UNIT_CONCEPT_ID
+      description: '{{ doc("emerge_measurement_ex_release_20260127_unit_concept_id")
+        }}'
+    - name: UNIT_CONCEPT_AS_TEXT
+      description: '{{ doc("emerge_measurement_ex_release_20260127_unit_concept_as_text")
+        }}'
+    - name: ROW_ID
+      description: '{{ doc("emerge_measurement_ex_release_20260127_row_id") }}'
+    - name: ENCOUNTER_ID
+      description: '{{ doc("emerge_measurement_ex_release_20260127_encounter_id")
+        }}'
+    - name: GIRA_ROR
+      description: '{{ doc("emerge_measurement_ex_release_20260127_gira_ror") }}'
+  - name: emerge_bmi_ex_release_20260128
+    description: Source table for emerge_bmi_ex_release_20260128.
+    columns:
+    - name: EMERGE_ID
+      description: '{{ doc("emerge_bmi_ex_release_20260128_emerge_id") }}'
+    - name: AGE_AT_EVENT
+      description: '{{ doc("emerge_bmi_ex_release_20260128_age_at_event") }}'
+    - name: MEASUREMENT_CONCEPT_ID
+      description: '{{ doc("emerge_bmi_ex_release_20260128_measurement_concept_id")
+        }}'
+    - name: MEASUREMENT_CONCEPT_NAME
+      description: '{{ doc("emerge_bmi_ex_release_20260128_measurement_concept_name")
+        }}'
+    - name: VALUE_AS_NUMBER
+      description: '{{ doc("emerge_bmi_ex_release_20260128_value_as_number") }}'
+    - name: UNIT_CONCEPT_ID
+      description: '{{ doc("emerge_bmi_ex_release_20260128_unit_concept_id") }}'
+    - name: UNIT_CONCEPT_NAME
+      description: '{{ doc("emerge_bmi_ex_release_20260128_unit_concept_name") }}'
+    - name: BMI_Z_SCORE
+      description: '{{ doc("emerge_bmi_ex_release_20260128_bmi_z_score") }}'
+    - name: ROW_ID
+      description: '{{ doc("emerge_bmi_ex_release_20260128_row_id") }}'
+    - name: ENCOUNTER_ID
+      description: '{{ doc("emerge_bmi_ex_release_20260128_encounter_id") }}'
+    - name: GIRA_ROR
+      description: '{{ doc("emerge_bmi_ex_release_20260128_gira_ror") }}'
+  - name: emerge_cpt_ex_release_20260129
+    description: Source table for emerge_cpt_ex_release_20260129.
+    columns:
+    - name: EMERGE_ID
+      description: '{{ doc("emerge_cpt_ex_release_20260129_emerge_id") }}'
+    - name: AGE_AT_EVENT
+      description: '{{ doc("emerge_cpt_ex_release_20260129_age_at_event") }}'
+    - name: CPT_CODE
+      description: '{{ doc("emerge_cpt_ex_release_20260129_cpt_code") }}'
+    - name: ROW_ID
+      description: '{{ doc("emerge_cpt_ex_release_20260129_row_id") }}'
+    - name: ENCOUNTER_ID
+      description: '{{ doc("emerge_cpt_ex_release_20260129_encounter_id") }}'
+    - name: GIRA_ROR
+      description: '{{ doc("emerge_cpt_ex_release_20260129_gira_ror") }}'
+    - name: null
+      description: '{{ doc("emerge_cpt_ex_release_20260129_none") }}'
+    - name: null
+      description: '{{ doc("emerge_cpt_ex_release_20260129_none") }}'
+    - name: Redacted Codes List
+      description: '{{ doc("emerge_cpt_ex_release_20260129_redacted_codes_list") }}'
+  - name: emerge_icd_ex_release_20260129
+    description: Source table for emerge_icd_ex_release_20260129.
+    columns:
+    - name: EMERGE_ID
+      description: '{{ doc("emerge_icd_ex_release_20260129_emerge_id") }}'
+    - name: AGE_AT_EVENT
+      description: '{{ doc("emerge_icd_ex_release_20260129_age_at_event") }}'
+    - name: ICD_CODE
+      description: '{{ doc("emerge_icd_ex_release_20260129_icd_code") }}'
+    - name: ICD_FLAG
+      description: '{{ doc("emerge_icd_ex_release_20260129_icd_flag") }}'
+    - name: ROW_ID
+      description: '{{ doc("emerge_icd_ex_release_20260129_row_id") }}'
+    - name: ENCOUNTER_ID
+      description: '{{ doc("emerge_icd_ex_release_20260129_encounter_id") }}'
+    - name: GIRA_ROR
+      description: '{{ doc("emerge_icd_ex_release_20260129_gira_ror") }}'

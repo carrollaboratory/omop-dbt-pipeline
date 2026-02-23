@@ -12,11 +12,48 @@ snapshot-paths:
 clean-targets:
 - target
 - dbt_packages
-
 vars:
-  dbt_date:time_zone: 'America/Chicago'
-
+  dbt_date:time_zone: America/Chicago
 models:
   +schema: main
   +materialized: table
- 
+  emerge_consort_gira_src_emerge_person_ex_release_20260123: {}
+  omop_54_person: {}
+  omop_54_observation_period: {}
+  omop_54_visit_occurrence: {}
+  omop_54_visit_detail: {}
+  omop_54_condition_occurrence: {}
+  omop_54_drug_exposure: {}
+  omop_54_procedure_occurrence: {}
+  omop_54_device_exposure: {}
+  omop_54_measurement: {}
+  omop_54_observation: {}
+  omop_54_death: {}
+  omop_54_note: {}
+  omop_54_note_nlp: {}
+  omop_54_specimen: {}
+  omop_54_fact_relationship: {}
+  omop_54_location: {}
+  omop_54_care_site: {}
+  omop_54_provider: {}
+  omop_54_payer_plan_period: {}
+  omop_54_cost: {}
+  omop_54_drug_era: {}
+  omop_54_dose_era: {}
+  omop_54_condition_era: {}
+  omop_54_episode: {}
+  omop_54_episode_event: {}
+  omop_54_metadata: {}
+  omop_54_cdm_source: {}
+  omop_54_concept: {}
+  omop_54_vocabulary: {}
+  omop_54_domain: {}
+  omop_54_concept_class: {}
+  omop_54_concept_relationship: {}
+  omop_54_relationship: {}
+  omop_54_concept_synonym: {}
+  omop_54_concept_ancestor: {}
+  omop_54_source_to_concept_map: {}
+  omop_54_drug_strength: {}
+  omop_54_cohort: {}
+  omop_54_cohort_definition: {}
