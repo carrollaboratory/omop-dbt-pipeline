@@ -8,5 +8,5 @@
     "GENDER_CONCEPT_ID"::text as "gender_concept_id",
     "RACE_CONCEPT_ID"::text as "race_concept_id",
     "ETHNICITY_CONCEPT_ID"::text as "ethnicity_concept_id"
-    from {{ source('consort_gira', 'emerge_person_ex_release_20260123') }}
+    from read_csv('../_study_data/consort_gira/emerge_person_ex_release_20260123.csv')
     

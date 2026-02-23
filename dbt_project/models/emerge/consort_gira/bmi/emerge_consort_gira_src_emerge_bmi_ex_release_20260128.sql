@@ -13,5 +13,4 @@
     "ROW_ID"::text as "row_id",
     "ENCOUNTER_ID"::text as "encounter_id",
     "GIRA_ROR"::text as "gira_ror"
-    from {{ source('consort_gira', 'emerge_bmi_ex_release_20260128') }}
-    
+    from read_csv('../_study_data/consort_gira/emerge_bmi_ex_release_20260128.csv')
