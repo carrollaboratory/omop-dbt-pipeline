@@ -140,14 +140,6 @@ Indicates a sequence of events for same age encounters (events that occur on the
 A flag indicating if an encounter occurred before or after participant GIRA return
 {% enddocs %}
 
-{% docs emerge_cpt_ex_release_20260129_none %}
-None
-{% enddocs %}
-
-{% docs emerge_cpt_ex_release_20260129_redacted_codes_list %}
-Redacted Codes List
-{% enddocs %}
-
 {% docs emerge_icd_ex_release_20260129_emerge_id %}
 Unique de-identified eMERGE ID formatted as SITE_ID + 5 digit randomized
  Ex: 2713331; 7 total digits

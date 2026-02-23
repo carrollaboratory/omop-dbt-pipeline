@@ -95,12 +95,6 @@ sources:
       description: '{{ doc("emerge_cpt_ex_release_20260129_encounter_id") }}'
     - name: GIRA_ROR
       description: '{{ doc("emerge_cpt_ex_release_20260129_gira_ror") }}'
-    - name: null
-      description: '{{ doc("emerge_cpt_ex_release_20260129_none") }}'
-    - name: null
-      description: '{{ doc("emerge_cpt_ex_release_20260129_none") }}'
-    - name: Redacted Codes List
-      description: '{{ doc("emerge_cpt_ex_release_20260129_redacted_codes_list") }}'
   - name: emerge_icd_ex_release_20260129
     description: Source table for emerge_icd_ex_release_20260129.
     columns:

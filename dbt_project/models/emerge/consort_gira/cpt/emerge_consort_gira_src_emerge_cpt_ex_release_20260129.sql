@@ -8,8 +8,5 @@
     "ROW_ID"::text as "row_id",
     "ENCOUNTER_ID"::text as "encounter_id",
     "GIRA_ROR"::text as "gira_ror",
-    "None"::text as "none",
-    "None"::text as "none",
-    "Redacted Codes List"::text as "redacted_codes_list"
     from {{ source('consort_gira', 'emerge_cpt_ex_release_20260129') }}
     
