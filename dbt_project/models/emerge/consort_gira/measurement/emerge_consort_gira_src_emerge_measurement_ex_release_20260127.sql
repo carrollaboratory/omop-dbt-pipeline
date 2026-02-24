@@ -1,17 +1,31 @@
 {{ config(materialized='table') }}
-
-    select
-    ROW_NUMBER() OVER () AS "emerge_index",
-    "EMERGE_ID"::text as "emerge_id",
-    "MEASUREMENT_CONCEPT_ID"::text as "measurement_concept_id",
-    "VALUE_AS_NUMBER"::text as "value_as_number",
-    "VALUE_AS_TEXT"::text as "value_as_text",
-    "RANGE_LOW"::text as "range_low",
-    "RANGE_HIGH"::text as "range_high",
-    "RANGE_FLAG"::text as "range_flag",
-    "UNIT_CONCEPT_ID"::text as "unit_concept_id",
-    "UNIT_CONCEPT_AS_TEXT"::text as "unit_concept_as_text",
-    "ROW_ID"::text as "row_id",
-    "ENCOUNTER_ID"::text as "encounter_id",
-    "GIRA_ROR"::text as "gira_ror"
-     from read_csv('../_study_data/consort_gira/emerge_measurement_ex_release_20260127.csv')
+        
+SELECT
+    "EMERGE_ID"::TEXT AS "emerge_id",
+    "AGE_AT_EVENT"::TEXT AS "age_at_event",
+    "MEASUREMENT_CONCEPT_ID"::TEXT AS "measurement_concept_id",
+    "VALUE_AS_NUMBER"::TEXT AS "value_as_number",
+    "VALUE_AS_TEXT"::TEXT AS "value_as_text",
+    "RANGE_LOW"::TEXT AS "range_low",
+    "RANGE_HIGH"::TEXT AS "range_high",
+    "RANGE_FLAG"::TEXT AS "range_flag",
+    "UNIT_CONCEPT_ID"::TEXT AS "unit_concept_id",
+    "UNIT_CONCEPT_AS_TEXT"::TEXT AS "unit_concept_as_text",
+    "ROW_ID"::TEXT AS "row_id",
+    "ENCOUNTER_ID"::TEXT AS "encounter_id",
+    "GIRA_ROR"::TEXT AS "gira_ror",
+FROM read_csv('../../_study_data/consort_gira/eMERGE_Measurement_Ex_Release_20260127.csv', AUTO_DETECT=FALSE, HEADER=TRUE, columns={
+        'EMERGE_ID': 'VARCHAR',
+        'AGE_AT_EVENT': 'VARCHAR',
+        'MEASUREMENT_CONCEPT_ID': 'VARCHAR',
+        'VALUE_AS_NUMBER': 'VARCHAR',
+        'VALUE_AS_TEXT': 'VARCHAR',
+        'RANGE_LOW': 'VARCHAR',
+        'RANGE_HIGH': 'VARCHAR',
+        'RANGE_FLAG': 'VARCHAR',
+        'UNIT_CONCEPT_ID': 'VARCHAR',
+        'UNIT_CONCEPT_AS_TEXT': 'VARCHAR',
+        'ROW_ID': 'VARCHAR',
+        'ENCOUNTER_ID': 'VARCHAR',
+        'GIRA_ROR': 'VARCHAR'
+    })
