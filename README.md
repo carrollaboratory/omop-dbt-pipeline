@@ -1,2 +1,3 @@
-# mop-dbt-pipeline
+# omop-dbt-pipeline
+
 
