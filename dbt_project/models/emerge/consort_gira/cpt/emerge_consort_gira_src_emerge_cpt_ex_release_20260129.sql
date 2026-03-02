@@ -8,7 +8,7 @@ SELECT
     "ROW_ID"::TEXT AS "row_id",
     "ENCOUNTER_ID"::TEXT AS "encounter_id",
     "GIRA_ROR"::TEXT AS "gira_ror"
-FROM read_csv('../../_study_data/consort_gira/eMERGE_CPT_Ex_Release_20260129.csv', AUTO_DETECT=FALSE, HEADER=TRUE, columns={
+FROM read_csv('../../_study_data/consort_gira/eMERGE_CPT_Ex_Release_20260129.csv', AUTO_DETECT=FALSE, HEADER=TRUE, nullstr = ["null", "NA"], columns={
         'EMERGE_ID': 'VARCHAR',
         'AGE_AT_EVENT': 'VARCHAR',
         'CPT_CODE': 'VARCHAR',

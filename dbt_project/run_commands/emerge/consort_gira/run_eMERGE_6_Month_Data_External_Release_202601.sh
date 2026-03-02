@@ -3,14 +3,14 @@ dbt clean
 dbt deps || { echo "Error: dbt deps failed. Exiting..."; exit 1; }
 dbt seed #--full-refresh
 
-Source tables
-dbt run --select emerge_consort_gira_src_emerge_person_ex_release_20260123
-dbt run --select emerge_consort_gira_src_emerge_measurement_ex_release_20260127
+# Source tables
+# dbt run --select emerge_consort_gira_src_emerge_person_ex_release_20260123
+# dbt run --select emerge_consort_gira_src_emerge_measurement_ex_release_20260127
 dbt run --select emerge_consort_gira_src_emerge_bmi_ex_release_20260128
-dbt run --select emerge_consort_gira_src_emerge_cpt_ex_release_20260129
-dbt run --select emerge_consort_gira_src_emerge_icd_ex_release_20260129
+# dbt run --select emerge_consort_gira_src_emerge_cpt_ex_release_20260129
+# dbt run --select emerge_consort_gira_src_emerge_icd_ex_release_20260129
 
-# +
+
 #  Stb tables
 # dbt run --select emerge_consort_gira_stb_person
 # dbt run --select emerge_consort_gira_stb_observation_period
