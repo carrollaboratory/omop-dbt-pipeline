@@ -1,2 +1,2 @@
-variable_name,variable_description,data_type,enumerated_values,units,min,max,src_variable_name
-int_index,Unique key for the FTD record,String,,,,,int_index
+variable_name,variable_description,data_type,enumerated_values,units,min,max,src_variable_name,test
+int_index,Unique key for the FTD record,String,,,,,int_index,
