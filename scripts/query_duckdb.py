@@ -28,7 +28,7 @@ def execute(query):
 
 
 table = execute(
-    "SELECT table_name FROM information_schema.tables WHERE table_schema = 'main'"
+    "SELECT table_name FROM information_schema.tables WHERE table_schema = 'main_main'"
 )
 print(table)
 
