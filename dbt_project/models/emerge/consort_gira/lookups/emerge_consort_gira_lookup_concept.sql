@@ -80,6 +80,7 @@ code_cpt_concepts as (
     WHERE cpt_code IS NOT NULL
 )
 
+
 SELECT * 
 FROM id_join_concepts 
 LEFT JOIN {{ ref('CONCEPT') }} AS concept
