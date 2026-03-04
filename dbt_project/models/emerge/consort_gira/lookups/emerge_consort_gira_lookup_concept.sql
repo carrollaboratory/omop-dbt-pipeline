@@ -80,20 +80,26 @@ code_cpt_concepts as (
     WHERE cpt_code IS NOT NULL
 )
 
-SELECT * FROM id_join_concepts LEFT JOIN {{ ref('CONCEPT') }} AS concept
-    ON id_join_concepts.concept_id = concept.concept_id
+SELECT * 
+FROM id_join_concepts 
+LEFT JOIN {{ ref('CONCEPT') }} AS concept
+ON id_join_concepts.concept_id = concept.concept_id
 
 UNION
 
-SELECT * FROM code_icd_concepts LEFT JOIN {{ ref('CONCEPT') }} AS concept
-    ON code_icd_concepts.concept_code = concept.concept_code 
-    AND vocabulary_id LIKE 'ICD%'
+SELECT *
+FROM code_icd_concepts 
+LEFT JOIN {{ ref('CONCEPT') }} AS concept
+ON code_icd_concepts.concept_code = concept.concept_code 
+AND vocabulary_id LIKE 'ICD%'
     
 UNION
 
-SELECT * FROM code_cpt_concepts LEFT JOIN {{ ref('CONCEPT') }} AS concept
-    ON code_cpt_concepts.concept_code = concept.concept_code 
-    AND vocabulary_id = 'CPT4'
+SELECT * 
+FROM code_cpt_concepts 
+LEFT JOIN {{ ref('CONCEPT') }} AS concept
+ON code_cpt_concepts.concept_code = concept.concept_code 
+AND vocabulary_id = 'CPT4'
     
 
 
