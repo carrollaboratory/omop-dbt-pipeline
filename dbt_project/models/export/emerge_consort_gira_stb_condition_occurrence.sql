@@ -2,9 +2,9 @@
 
     select
     null::integer as "condition_occurrence_id",
-    null::integer as "person_id",
-    null::integer as "condition_concept_id",
-    null::text as "condition_start_date",
+    emerge_id::integer as "person_id",
+    concept_id::integer as "condition_concept_id",
+    null::text as "condition_start_date", -- required but unknown in data
     null::timestamp as "condition_start_datetime",
     null::text as "condition_end_date",
     null::timestamp as "condition_end_datetime",
@@ -14,8 +14,35 @@
     null::integer as "provider_id",
     null::integer as "visit_occurrence_id",
     null::integer as "visit_detail_id",
-    null::text as "condition_source_value",
+    concept_code::text as "condition_source_value",
     null::integer as "condition_source_concept_id",
-    null::text as "condition_status_source_value"
-    from {{ ref('emerge_consort_gira_src_emerge_person_ex_release_20260123') }}
+    null::text as "condition_status_source_value",
+    row_id::integer as "x_row_id",
+    encounter_id::integer as "x_encounter_id",
+    gira_ror::text as "x_gira_ror"
+    from (SELECT * FROM {{ ref('emerge_consort_gira_int_icd') }} WHERE domain_id = 'Condition')
+    
+    union all
+    
+    select
+    null::integer as "condition_occurrence_id",
+    emerge_id::integer as "person_id",
+    concept_id::integer as "condition_concept_id",
+    null::text as "condition_start_date", -- required but unknown in data
+    null::timestamp as "condition_start_datetime",
+    null::text as "condition_end_date",
+    null::timestamp as "condition_end_datetime",
+    null::integer as "condition_type_concept_id",
+    null::integer as "condition_status_concept_id",
+    null::text as "stop_reason",
+    null::integer as "provider_id",
+    null::integer as "visit_occurrence_id",
+    null::integer as "visit_detail_id",
+    concept_code::text as "condition_source_value",
+    cpt_code::integer as "condition_source_concept_id",
+    null::text as "condition_status_source_value",
+    row_id::integer as "x_row_id",
+    encounter_id::integer as "x_encounter_id",
+    gira_ror::text as "x_gira_ror"
+    from (SELECT * FROM {{ ref('emerge_consort_gira_int_cpt') }} WHERE domain_id = 'Condition')
     

@@ -9,7 +9,7 @@
     null::integer as "observation_type_concept_id", -- required but unknown in the data
     null::float as "value_as_number",
     null::text as "value_as_string",
-    cpt_code::integer as "value_as_concept_id",
+    cpt_code::text as "value_as_concept_id",
     null::integer as "qualifier_concept_id",
     null::integer as "unit_concept_id",
     null::integer as "provider_id",
@@ -24,7 +24,7 @@
     null::integer as "obs_event_field_concept_id",
     row_id::integer as "x_row_id",
     encounter_id::integer as "x_encounter_id",
-    gira_ror::integer as "x_gira_ror"
+    gira_ror::text as "x_gira_ror"
     from (SELECT * FROM {{ ref('emerge_consort_gira_int_cpt') }} WHERE domain_id = 'Observation')
     
     union all
@@ -38,7 +38,7 @@
     null::integer as "observation_type_concept_id", -- required but unknown in the data
     null::float as "value_as_number",
     null::text as "value_as_string",
-    icd_code::integer as "value_as_concept_id",
+    icd_code::text as "value_as_concept_id",
     null::integer as "qualifier_concept_id",
     null::integer as "unit_concept_id",
     null::integer as "provider_id",
@@ -51,8 +51,8 @@
     null::text as "value_source_value",
     null::integer as "observation_event_id",
     null::integer as "obs_event_field_concept_id",
-    row_id::integer as "x_row_id",
+    row_id::text as "x_row_id",
     encounter_id::integer as "x_encounter_id",
-    gira_ror::integer as "x_gira_ror"
+    gira_ror::text as "x_gira_ror"
     from (SELECT * FROM {{ ref('emerge_consort_gira_int_icd') }} WHERE domain_id = 'Observation')
     
