@@ -1,5 +1,5 @@
 {{ config(materialized='table') }}
-        
+     
 SELECT
     "emerge_id",
     "age_at_event",
@@ -14,7 +14,11 @@ SELECT
     "row_id",
     "encounter_id",
     "gira_ror",
-    c.*
 FROM {{ ref('emerge_consort_gira_src_emerge_measurement_ex_release_20260127') }} meas_src
-LEFT JOIN {{ ref('emerge_consort_gira_lookup_concept') }} AS c
-    ON meas_src.measurement_concept_id = c.concept_id
+JOIN (SELECT -- JOIN used to drop rows that are not domain 'Observation'
+       concept_id
+      FROM {{ ref('emerge_consort_gira_lookup_concept') }} 
+      WHERE src_table = 'M'
+      AND domain_id = 'Observation'
+       ) AS mci
+    ON meas_src.measurement_concept_id = mci.concept_id
