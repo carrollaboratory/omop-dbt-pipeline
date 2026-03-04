@@ -20,7 +20,7 @@
     row_id::integer as "x_row_id",
     encounter_id::integer as "x_encounter_id",
     gira_ror::text as "x_gira_ror"
-    from (SELECT * FROM {{ ref('emerge_consort_gira_int_icd') }} WHERE domain_id = 'Condition')
+    from {{ ref('emerge_consort_gira_int_icd_observations') }} --place holder icd conditions
     
     union all
     
@@ -44,5 +44,5 @@
     row_id::integer as "x_row_id",
     encounter_id::integer as "x_encounter_id",
     gira_ror::text as "x_gira_ror"
-    from (SELECT * FROM {{ ref('emerge_consort_gira_int_cpt') }} WHERE domain_id = 'Condition')
+    from {{ ref('emerge_consort_gira_int_cpt_observations') }} --place holder cpt conditions
     
