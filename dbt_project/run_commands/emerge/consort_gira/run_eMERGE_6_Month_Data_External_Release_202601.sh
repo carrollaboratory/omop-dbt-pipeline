@@ -1,23 +1,33 @@
 #!/bin/bash
 dbt clean
 dbt deps || { echo "Error: dbt deps failed. Exiting..."; exit 1; }
-dbt seed #--full-refresh
+#dbt seed #--full-refresh
 
 # Source tables
+<<<<<<< HEAD
 dbt run --select emerge_consort_gira_src_emerge_person_ex_release_20260123
 dbt run --select emerge_consort_gira_src_emerge_measurement_ex_release_20260127
 dbt run --select emerge_consort_gira_src_emerge_bmi_ex_release_20260128
 dbt run --select emerge_consort_gira_src_emerge_cpt_ex_release_20260129
 dbt run --select emerge_consort_gira_src_emerge_icd_ex_release_20260129
 dbt run --select CONCEPT
+=======
+# dbt run --select emerge_consort_gira_src_emerge_person_ex_release_20260123
+# dbt run --select emerge_consort_gira_src_emerge_measurement_ex_release_20260127
+# dbt run --select emerge_consort_gira_src_emerge_bmi_ex_release_20260128
+# dbt run --select emerge_consort_gira_src_emerge_cpt_ex_release_20260129
+# dbt run --select emerge_consort_gira_src_emerge_icd_ex_release_20260129
+# dbt run --select CONCEPT
+# dbt run --select CONCEPT_RELATIONSHIP
+dbt run --select emerge_consort_gira_lookup_concept
+>>>>>>> 9e5fbacd134e408aa9a6945095d2dd8b73ecfa58
 
 
-# +
 # Intermediate tables
-# dbt run --select emerge_consort_gira_int_bmi
-# dbt run --select emerge_consort_gira_int_cpt
-# dbt run --select emerge_consort_gira_int_icd
-# dbt run --select emerge_consort_gira_int_measurement
+dbt run --select emerge_consort_gira_int_bmi
+dbt run --select emerge_consort_gira_int_cpt
+dbt run --select emerge_consort_gira_int_icd
+dbt run --select emerge_consort_gira_int_measurement
 
 # +
 # Stb tables

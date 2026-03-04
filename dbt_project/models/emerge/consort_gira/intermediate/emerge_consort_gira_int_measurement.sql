@@ -16,5 +16,5 @@ SELECT
     "gira_ror",
     c.*
 FROM {{ ref('emerge_consort_gira_src_emerge_measurement_ex_release_20260127') }} meas_src
-LEFT JOIN {{ ref('CONCEPT') }} AS concept_lookup
-    ON meas_src.measurement_concept_id = concept_lookup.concept_id
+LEFT JOIN {{ ref('emerge_consort_gira_lookup_concept') }} AS c
+    ON meas_src.measurement_concept_id = c.concept_id

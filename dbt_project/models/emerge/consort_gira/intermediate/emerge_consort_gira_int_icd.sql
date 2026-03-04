@@ -11,5 +11,6 @@ SELECT
 "gira_ror",
 c.*
 FROM {{ ref('emerge_consort_gira_src_emerge_icd_ex_release_20260129') }} icd_src
-LEFT JOIN {{ ref('CONCEPT') }} AS concept_lookup
-    ON icd_src.icd_code = concept_lookup.concept_id
+LEFT JOIN {{ ref('emerge_consort_gira_lookup_concept') }} AS c
+    ON icd_src.icd_code = c.concept_code
+    WHERE vocabulary_id LIKE 'ICD%'
