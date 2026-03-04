@@ -1,0 +1,7 @@
+sql requests
+
+For care_site, we need to extract the unique two-digit combinations from all emerge ids (presumably in the Person table). From there we need to be able to map those two digit codes to site enumerations (e.g., 9512345 should be 95 and then that prefix maps to CHOP)
+
+
+For the visit table, we need all encounter IDs from all tables (CPT, ICD, BMI, and Measurement) grouped by participant (e.g., Participant 9512345 has encounter IDs 1, 2, 3, and 4) and then we need to make a list of all ID/encounter_id combinations (the example participant creates 4 rows in visit)
+
