@@ -286,10 +286,24 @@ table = execute(
 table
 
 # yob is used for measurement.measurment_date. TODO: What to do when NULL
+# +
+table = execute(
+    """
+
+    SELECT 
+    SUM(CASE WHEN year_of_birth is not null then 1 else 0 end) as yob_exists,
+    SUM(CASE WHEN year_of_birth is null then 1 else 0 end) as yob_null
+    FROM main_main.emerge_consort_gira_src_emerge_person_ex_release_20260123
+
+    """
+)
+table
+
+# yob is used for measurement.measurment_date. TODO: What to do when NULL
+
+# +
+# are all persons in measurements...etc in person table
 # -
-
-
-
 
 # # BMI
 
@@ -355,7 +369,17 @@ table
 # 1	Observable Entity	88721.0	0.0	88721.0	SNOMED	Measurement	Observable Entity
 
 # -
-
+table = execute(
+    """
+    SELECT
+        distinct measurement_concept_id, measurement_concept_name
+        
+    FROM main_main.emerge_consort_gira_src_emerge_bmi_ex_release_20260128 bmi_src
+    
+    
+    """
+)
+table
 
 
 # # CPT
@@ -468,5 +492,187 @@ GROUP BY ic_vocabulary_id
 table
 
 
+
+
+# -
+
+
+
+
+
+# # vocabulary
+
+# +
+table = execute(
+    """
+    SELECT 
+    distinct vocabulary_id
+    FROM main_main.emerge_consort_gira_lookup_concept c
+
+    
+     """
+)
+table
+
+#  TODO Add tests to a 'src_data/concept_info' model(int?) to assert domains are expected as well as vocabularies.
+#  EX: If the src measurement table is refreshed and now has a few procedures, or rows that don't join to the vocab at all.
+
+# +
+table = execute(
+    """
+    SELECT 
+    sum(case when s_concept_id is null then 1 else 0 end) as n_null_standards
+    ,sum(case when s_concept_id = 0 then 1 else 0 end) as n_invalid_standards
+    ,sum(case when s_concept_id is not null and s_concept_id != 0 then 1 else 0 end) as n_valid_standards
+    FROM main_main.emerge_consort_gira_lookup_standards s
+
+    
+     """
+)
+table
+
+
+# -
+
+table = execute(
+    """
+    SELECT 
+*
+    FROM main_main.emerge_consort_gira_lookup_standards s
+ 
+
+    
+     """
+)
+table
+
+# +
+table = execute(
+    """
+    
+    WITH filtered_concept as (
+    SELECT 
+    distinct concept_id, concept_code, src_table, vocabulary_id, standard_concept, concept_id_1, concept_code_1
+    FROM main_main.emerge_consort_gira_lookup_concept c
+    WHERE standard_concept IS NULL
+    ),
+    
+    filtered_cr as (    
+    SELECT src_table, vocabulary_id, standard_concept, concept_id_2
+    FROM filtered_concept fc
+    LEFT JOIN (SELECT * FROM main_main.CONCEPT_RELATIONSHIP WHERE relationship_id = 'Maps to') cr
+    ON fc.concept_id_1 = cr.concept_id_1
+    )
+    
+    SELECT
+      src_table, vocabulary_id, standard_concept,
+          SUM(CASE WHEN vocabulary_id IS NULL THEN 1 ELSE 0 END) as n_no_concept_join,
+          SUM(CASE WHEN concept_id_2 IS NULL THEN 1 ELSE 0 END) as 'n_no_standard',
+
+    FROM filtered_cr
+    WHERE concept_id_2 IS NULL -- Filter out those that join to concept_relationship
+    GROUP BY  src_table, vocabulary_id, standard_concept
+
+    
+    """
+)
+table
+
+# The following are a subset of source codes/ids that are not Standard concepts.
+# 1. Some don't join to the CONCEPT table at all. See column 'n_no_concept_join'
+# 2. Some viable concepts don't have a mapped Standard concept 
+# -
+
+table = execute(
+    """
+    
+    WITH 
+    
+    filtered_concept as (
+    SELECT 
+    distinct concept_id as src_concept_id, 
+    concept_code as src_concept_code,
+    src_table,
+    vocabulary_id,
+    domain_id
+    FROM main_main.emerge_consort_gira_lookup_concept c
+    ),
+    
+    join_cr as (
+    SELECT  
+    distinct src_concept_id, 
+    src_concept_code,
+    src_table,
+    vocabulary_id,
+    domain_id,
+    concept_id_2 as "s_concept_id",
+    FROM filtered_concept fc
+    LEFT JOIN (SELECT * FROM main_main.CONCEPT_RELATIONSHIP WHERE relationship_id = 'Maps to' AND invalid_reason IS NULL) cr
+    ON fc.src_concept_id = cr.concept_id_1
+    )
+    
+    SELECT    
+    distinct src_concept_id, 
+    src_concept_code,
+    src_table,
+    jcr.vocabulary_id,
+    jcr.domain_id,
+    s_concept_id,
+    base_concept.concept_code as "s_concept_code",
+    base_concept.standard_concept as 's_standard_concept',
+    base_concept.vocabulary_id as 's_vocabulary_id'
+    FROM join_cr jcr
+    LEFT JOIN main_main.CONCEPT base_concept
+    ON jcr.s_concept_id = base_concept.concept_id
+
+
+    """
+)
+table
+
+table = execute(
+    """
+    
+    with code_cpt_concepts as (
+    SELECT DISTINCT null as concept_id,
+    cpt_code AS concept_code,
+    'CPT' as src_table
+    FROM main_main.emerge_consort_gira_src_emerge_cpt_ex_release_20260129
+    WHERE cpt_code IS NOT NULL
+)
+
+SELECT * 
+FROM code_cpt_concepts ccc
+LEFT JOIN main_main.CONCEPT AS concept
+ON ccc.concept_code = concept.concept_code 
+WHERE vocabulary_id = 'CPT4'
+and ccc.concept_code = '94664'
+
+""")
+table
+
+table = execute(
+    """
+
+SELECT * 
+FROM main_main.emerge_consort_gira_lookup_concept AS concept
+WHERE vocabulary_id = 'CPT4'
+and concept_code = '94664'
+
+""")
+table
+
+table = execute(
+    """
+    
+    SELECT 
+*
+    FROM main_main.concept c
+    where concept_code = '94664'
+    --where vocabulary_id = 'CPT4'
+
+    """
+)
+table
 
 
