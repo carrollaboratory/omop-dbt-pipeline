@@ -17,6 +17,7 @@ SELECT
     row_id,
     encounter_id,
     gira_ror,
+    src_index,
 FROM {{ ref('emerge_consort_gira_src_emerge_bmi_ex_release_20260128') }} src
 JOIN (SELECT -- JOIN used to drop rows that are not domain 'Measurement'
       s_concept_id, s_concept_code, src_concept_id

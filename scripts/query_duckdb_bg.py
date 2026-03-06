@@ -40,17 +40,61 @@ table
 
 # +
 table = execute(
-    "PRAGMA table_info('main_main.emerge_consort_gira_int_bmi')"
+    "PRAGMA table_info('main_main.emerge_consort_gira_int_person_demographics')"
 )
 
 table
 # -
 
+# # analysis
+
 table = execute(
     """
-    SELECT * FROM main_main.emerge_consort_gira_lookup_concept 
-    WHERE concept_id_1 IS NULL
-    
+
+
+with all_emerge_ids as (
+    select distinct emerge_id from main_main.emerge_consort_gira_src_emerge_person_ex_release_20260123
+    union
+    select distinct emerge_id from main_main.emerge_consort_gira_src_emerge_measurement_ex_release_20260127
+    union
+    select distinct emerge_id from main_main.emerge_consort_gira_src_emerge_bmi_ex_release_20260128
+    union
+    select distinct emerge_id from main_main.emerge_consort_gira_src_emerge_cpt_ex_release_20260129
+    union
+    select distinct emerge_id from main_main.emerge_consort_gira_src_emerge_icd_ex_release_20260129
+)
+,
+unique_site_ids as (
+    select distinct substring(emerge_id, 1, 2) as site_id
+    from all_emerge_ids
+    where emerge_id is not null
+)
+
+select
+    site_id,
+    m.site_name
+from unique_site_ids u
+left join {{ ref('site_key_mapping') }} m
+    on u.site_id = m.site_key
+    """
+)
+table
+
+table = execute(
+    """
+    SELECT * FROM main_main.emerge_consort_gira_int_person_demographics
+     where withdrawal_status = 0
+    """
+)
+table
+
+table = execute(
+    """
+    SELECT 
+    sum(case when withdrawal_status = 1 then 1 else 0 end) as '1_active',
+    sum(case when withdrawal_status = 0 then 1 else 0 end) as '0_withdrawn',
+    sum(case when (withdrawal_status not in (1, 0) or withdrawal_status is null) then 1 else 0 end) as 'unexpected_status'
+    FROM main_main.emerge_consort_gira_int_person_demographics
     """
 )
 table
@@ -123,7 +167,7 @@ table = execute(
                vocabulary_id as mci_vocabulary_id,
                domain_id as mci_domain_id,
                concept_class_id as mci_concept_class_id
-               FROM main_main.emerge_consort_gira_lookup_concept 
+               FROM main_main.emerge_consort_gira_lookup_concepts 
                ) AS mci
         ON meas_src.measurement_concept_id = mci.mci_concept_id
     ),
@@ -181,7 +225,7 @@ table = execute(
                vocabulary_id as uci_vocabulary_id,
                domain_id as uci_domain_id,
                concept_class_id as uci_concept_class_id
-               FROM main_main.emerge_consort_gira_lookup_concept 
+               FROM main_main.emerge_consort_gira_lookup_concepts 
                ) AS uci
         ON meas_src.unit_concept_id = uci.uci_concept_id
     ),
@@ -321,7 +365,7 @@ table = execute(
                vocabulary_id as mci_vocabulary_id,
                domain_id as mci_domain_id,
                concept_class_id as mci_concept_class_id
-               FROM main_main.emerge_consort_gira_lookup_concept 
+               FROM main_main.emerge_consort_gira_lookup_concepts 
                ) AS mci
         ON bmi_src.measurement_concept_id = mci.mci_concept_id
     ),
@@ -398,7 +442,7 @@ table = execute(
                vocabulary_id as cc_vocabulary_id,
                domain_id as cc_domain_id,
                concept_class_id as cc_concept_class_id
-               FROM main_main.emerge_consort_gira_lookup_concept 
+               FROM main_main.emerge_consort_gira_lookup_concepts 
                ) AS cc
         ON cpt_src.cpt_code = cc.cc_concept_code
     ),
@@ -455,7 +499,7 @@ table = execute(
                vocabulary_id as ic_vocabulary_id,
                domain_id as ic_domain_id,
                concept_class_id as ic_concept_class_id
-               FROM main_main.emerge_consort_gira_lookup_concept 
+               FROM main_main.emerge_consort_gira_lookup_concepts 
                ) AS ic
         ON icd_src.icd_code = ic.ic_concept_code
     ),
@@ -507,7 +551,7 @@ table = execute(
     """
     SELECT 
     distinct vocabulary_id
-    FROM main_main.emerge_consort_gira_lookup_concept c
+    FROM main_main.emerge_consort_gira_lookup_concepts c
 
     
      """
@@ -516,8 +560,8 @@ table
 
 #  TODO Add tests to a 'src_data/concept_info' model(int?) to assert domains are expected as well as vocabularies.
 #  EX: If the src measurement table is refreshed and now has a few procedures, or rows that don't join to the vocab at all.
+# -
 
-# +
 table = execute(
     """
     SELECT 
@@ -532,14 +576,34 @@ table = execute(
 table
 
 
+
+# +
+table = execute(
+    """
+    SELECT *
+    
+
+    FROM main_main.emerge_consort_gira_lookup_standards s
+where s_concept_id is null
+    
+     """
+    
+    cvx
+    
+)
+table
 # -
 
 table = execute(
     """
+
     SELECT 
-*
-    FROM main_main.emerge_consort_gira_lookup_standards s
- 
+    *
+    --sum(case when concept_id_1 is null then 1 else 0 end) as "n_null",
+    --sum(case when concept_id_1 is not null then 1 else 0 end) as "n_not"
+
+    FROM main_main.emerge_consort_gira_lookup_concepts s
+    where concept_id_1 is null
 
     
      """
@@ -553,7 +617,7 @@ table = execute(
     WITH filtered_concept as (
     SELECT 
     distinct concept_id, concept_code, src_table, vocabulary_id, standard_concept, concept_id_1, concept_code_1
-    FROM main_main.emerge_consort_gira_lookup_concept c
+    FROM main_main.emerge_consort_gira_lookup_concepts c
     WHERE standard_concept IS NULL
     ),
     
@@ -595,7 +659,7 @@ table = execute(
     src_table,
     vocabulary_id,
     domain_id
-    FROM main_main.emerge_consort_gira_lookup_concept c
+    FROM main_main.emerge_consort_gira_lookup_concepts c
     ),
     
     join_cr as (
@@ -632,6 +696,82 @@ table
 
 table = execute(
     """
+        with 
+    
+    filtered_concept as (
+        select 
+        distinct concept_id as src_concept_id, 
+        concept_code as src_concept_code,
+        concept_id_1 as c_concept_id,
+        src_table,
+        vocabulary_id,
+        domain_id
+        from main_main.emerge_consort_gira_lookup_concepts
+    ),
+    
+    jcr as (
+        select  
+        distinct src_concept_id, 
+        src_concept_code,
+        src_table,
+        vocabulary_id,
+        domain_id,
+        concept_id_2
+        from filtered_concept fc
+        left join (select * -- TODO make sure there are not more than one relationship 'Maps to'. Check for duplicates.
+                   from main_main.CONCEPT_RELATIONSHIP
+                   where relationship_id = 'Maps to'  -- and invalid_reason is NULL
+                  ) cr
+        on fc.c_concept_id = cr.concept_id_1
+    )
+    
+    select    
+    distinct src_concept_id, 
+    src_concept_code,
+    src_table,
+    jcr.vocabulary_id,
+    jcr.domain_id,
+      case 
+      when concept_id_2 is not null and valid_end_date = '20991231' then concept_id_2
+      -- A standard concept exists and is valid
+      when valid_end_date != '20991231' then 0
+      -- A standard concept exists but it is invalid
+      else null
+      -- The Src-cid didn't join to CONCEPT.
+      -- The Src-cid didn't join to CONCEPT_RELATIONSHIP.
+    end as "s_concept_id",
+      case 
+      when concept_id_2 is not null and valid_end_date = '20991231' then base_concept.concept_code
+      -- A standard concept exists and is valid
+      else null      
+      -- A standard concept exists but it is invalid      
+      -- The Src-cid didn't join to CONCEPT.
+      -- The Src-cid didn't join to CONCEPT_RELATIONSHIP.
+    end as "s_concept_code",
+    base_concept.vocabulary_id as 's_vocabulary_id'
+    from jcr
+    left join (select cast(valid_end_date as string) as valid_end_date, concept_id, concept_code , vocabulary_id
+               from main_main.CONCEPT
+               ) as base_concept
+    on jcr.concept_id_2 = base_concept.concept_id
+    
+    
+    """
+)
+table
+
+table = execute(
+    """
+    select * -- TODO make sure there are not more than one relationship 'Maps to'. Check for duplicates.
+                   from main_main.CONCEPT_RELATIONSHIP
+                   
+                   where relationship_id = 'Maps to'  -- and invalid_reason is NULL
+                   
+""")
+table
+
+table = execute(
+    """
     
     with code_cpt_concepts as (
     SELECT DISTINCT null as concept_id,
@@ -655,7 +795,7 @@ table = execute(
     """
 
 SELECT * 
-FROM main_main.emerge_consort_gira_lookup_concept AS concept
+FROM main_main.emerge_consort_gira_lookup_concepts AS concept
 WHERE vocabulary_id = 'CPT4'
 and concept_code = '94664'
 
@@ -668,7 +808,7 @@ table = execute(
     SELECT 
 *
     FROM main_main.concept c
-    where concept_code = '94664'
+    where concept_code = 'C8908'
     --where vocabulary_id = 'CPT4'
 
     """

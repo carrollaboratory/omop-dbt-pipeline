@@ -1,7 +1,7 @@
 {{ config(materialized='table') }}
         
 SELECT
-
+    ROW_NUMBER() OVER () AS "src_index",
     "EMERGE_ID"::TEXT AS "emerge_id",
     "AGE_AT_EVENT"::TEXT AS "age_at_event",
     "CPT_CODE"::TEXT AS "cpt_code",
