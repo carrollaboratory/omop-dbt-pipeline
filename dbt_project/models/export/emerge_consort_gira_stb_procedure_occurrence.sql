@@ -20,5 +20,5 @@
     row_id::text as "x_row_id",
     encounter_id::integer as "x_encounter_id",
     gira_ror::text as "x_gira_ror"
-    from (SELECT * FROM {{ ref('emerge_consort_gira_int_icd') }} WHERE domain_id = 'Procedure')
+    from {{ ref('emerge_consort_gira_int_icd_observations') }} -- placeholder for icd procedures
     

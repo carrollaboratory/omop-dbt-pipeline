@@ -12,7 +12,7 @@
     null::integer as "operator_concept_id",
     value_as_number::float as "value_as_number",
     null::integer as "value_as_concept_id",
-    unit_concept_id::integer as "unit_concept_id",
+    s_concept_id::integer as "unit_concept_id",
     case
       when try_cast(range_low as float) is not null
       then try_cast(range_low as float)
@@ -46,6 +46,7 @@
         END AS birth_date--TODO What to do when year_of_birth is null?
         from {{ ref('emerge_consort_gira_src_emerge_person_ex_release_20260123') }} ) as person
     using (emerge_id)
+    join to the lookup_standard table on unit_concept_id = src_concept_id
     
     union all
     
@@ -77,7 +78,7 @@
     row_id::integer as "x_row_id",
     encounter_id::integer as "x_encounter_id",
     gira_ror::text as "x_gira_ror"
-    from {{ ref('emerge_consort_gira_int_bmi') }}
+    from {{ ref('emerge_consort_gira_int_bmi_measurements') }}
     left join (select
         distinct emerge_id,
         CASE WHEN year_of_birth IS NOT NULL
