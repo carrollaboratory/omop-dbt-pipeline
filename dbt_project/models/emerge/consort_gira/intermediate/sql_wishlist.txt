@@ -5,3 +5,12 @@ For care_site, we need to extract the unique two-digit combinations from all eme
 
 For the visit table, we need all encounter IDs from all tables (CPT, ICD, BMI, and Measurement) grouped by participant (e.g., Participant 9512345 has encounter IDs 1, 2, 3, and 4) and then we need to make a list of all ID/encounter_id combinations (the example participant creates 4 rows in visit)
 
+
+Move the year_of_birth calculation into an intermediate person table (person_person) so I can just use birth_date in my domain_occurence_date field.
+
+left join (select
+        distinct emerge_id,
+        case when year_of_birth is not null
+             then make_date(CAST(year_of_birth as integer), 6, 15)
+             else make_date(1970, 6, 15)
+        end as birth_date--TODO What to do when year_of_birth is null?
