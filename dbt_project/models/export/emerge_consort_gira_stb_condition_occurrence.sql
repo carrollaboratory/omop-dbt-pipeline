@@ -4,11 +4,11 @@
     null::integer as "condition_occurrence_id",
     emerge_id::integer as "person_id",
     s_condition_concept_id::integer as "condition_concept_id",
-    date_add(birth_date, INTERVAL (age_at_event) YEAR)::date as "condition_start_date", -- required but unknown in data
+    date_add(birth_date, INTERVAL (age_at_event) YEAR)::date as "condition_start_date",
     null::timestamp as "condition_start_datetime",
     null::text as "condition_end_date",
     null::timestamp as "condition_end_datetime",
-    null::integer as "condition_type_concept_id",
+    32817::integer as "condition_type_concept_id",
     null::integer as "condition_status_concept_id",
     null::text as "stop_reason",
     null::integer as "provider_id",
