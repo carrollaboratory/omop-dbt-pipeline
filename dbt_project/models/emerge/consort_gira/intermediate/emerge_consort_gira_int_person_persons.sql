@@ -31,7 +31,8 @@ select
     end as birth_date, --TODO What to do when year_of_birth is null?
     src.gender_concept_id,
     max(case when cre.domain_id = 'Race' then cre.s_concept_id end) as race_concept_id,
-    max(case when cre.domain_id = 'Ethnicity' then cre.s_concept_id end) as ethnicity_concept_id
+    max(case when cre.domain_id = 'Ethnicity' then cre.s_concept_id end) as ethnicity_concept_id,
+    src_index,
 from {{ ref('emerge_consort_gira_src_emerge_person_ex_release_20260123') }} src
 left join cleaned_race_ethnicity cre
     on src.emerge_id = cre.emerge_id

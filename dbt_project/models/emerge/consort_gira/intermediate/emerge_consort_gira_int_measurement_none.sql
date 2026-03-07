@@ -1,23 +1,24 @@
 {{ config(materialized='table') }}
      
 SELECT
-    "emerge_id",
-    "age_at_event",
-    "measurement_concept_id",
+    emerge_id,
+    age_at_event,
+    measurement_concept_id,
     mci.s_concept_id as "s_measurement_concept_id",
     mci.s_concept_code as "s_measurement_concept_code",
-    "value_as_number",
-    "value_as_text",
-    "range_low",
-    "range_high",
-    "range_flag",
-    "unit_concept_id",
-    "unit_concept_as_text",
+    value_as_number,
+    value_as_text,
+    range_low,
+    range_high,
+    range_flag,
+    unit_concept_id,
+    unit_concept_as_text,
     uci.s_concept_id as "s_unit_concept_id",
     uci.s_concept_code as "s_unit_concept_code",
-    "row_id",
-    "encounter_id",
-    "gira_ror",
+    row_id,
+    encounter_id,
+    gira_ror,
+    src_index,
 FROM {{ ref('emerge_consort_gira_src_emerge_measurement_ex_release_20260127') }} src
 JOIN (SELECT -- JOIN used to drop rows that are not domain 'Measurement'
       s_concept_id, s_concept_code, src_concept_id

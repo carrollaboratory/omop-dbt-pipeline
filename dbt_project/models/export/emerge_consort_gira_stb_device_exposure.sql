@@ -1,8 +1,7 @@
 {{ config(materialized='table') }}
-
     select
-    null::integer as "device_exposure_id",
-    emerge_id::integer as "person_id",
+    {{ generate_key(src_tbl='cpt',tgt_col='device_exposure_id',study_id='consort_gira',row_id='cpt.row_id') }}::integer as "device_exposure_id",
+    {{ generate_key(src_tbl='person',tgt_col='person_id',study_id='consort_gira',row_id='p.row_id') }}::integer as "person_id", -- TODO should macro.row_id be person_id or row_id for the Person primary key?
     s_device_concept_id::integer as "device_concept_id",
     date_add(birth_date, INTERVAL (age_at_event) YEAR)::date as "device_exposure_start_date",
     null::timestamp as "device_exposure_start_datetime",
@@ -24,7 +23,7 @@
     encounter_id::integer as "x_encounter_id",
     gira_ror::text as "x_gira_ror"
     from {{ ref('emerge_consort_gira_int_cpt_devices') }} as cpt
-    left join (
-        from {{ ref('emerge_consort_gira_int_person_persons') }} ) as person
+    left join ( select row_id, birth_date, emerge_id
+        from {{ ref('emerge_consort_gira_int_person_persons') }} ) as p
     using (emerge_id)
     
