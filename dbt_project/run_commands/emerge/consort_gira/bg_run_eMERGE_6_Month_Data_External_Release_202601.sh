@@ -1,7 +1,13 @@
 #!/bin/bash
-dbt clean
-dbt deps || { echo "Error: dbt deps failed. Exiting..."; exit 1; }
-#dbt seed #--full-refresh # Full-refresh ensures seed tables exist AND are the most current version
+# +
+#  - Use `dbt seed --full-refresh` to refresh seeds in the database. On its own, `dbt seed` only ensures
+#  the presence of the tables from `dbt_project/seeds/*` in the db.
+
+
+# dbt clean
+# dbt deps || { echo "Error: dbt deps failed. Exiting..."; exit 1; }
+
+# dbt seed #--full-refresh
 
 # +
 # Source tables
@@ -12,38 +18,39 @@ dbt deps || { echo "Error: dbt deps failed. Exiting..."; exit 1; }
 # dbt run --select emerge_consort_gira_src_emerge_icd_ex_release_20260129
 # dbt run --select CONCEPT
 # dbt run --select CONCEPT_RELATIONSHIP
-# dbt run --select emerge_consort_gira_lookup_concepts
-# dbt run --select emerge_consort_gira_lookup_standards
+# -
 
+
+dbt run --select emerge_consort_gira_lookup_concepts
+dbt run --select emerge_consort_gira_lookup_standards
+# dbt run --select emerge_consort_gira_lookup_care_sites
+# dbt run --select emerge_consort_gira_lookup_encounters
 
 # +
 # Intermediate tables
-# dbt run --select emerge_consort_gira_int_bmi_measurements
+dbt run --select emerge_consort_gira_int_bmi_measurements
 
-# dbt run --select emerge_consort_gira_int_measurement_measurements # too large don't run
-# dbt run --select emerge_consort_gira_int_measurement_observations
+dbt run --select emerge_consort_gira_int_measurement_measurements
+dbt run --select emerge_consort_gira_int_measurement_observations
 
-# dbt run --select emerge_consort_gira_int_cpt_measurements
-# dbt run --select emerge_consort_gira_int_cpt_observations
-# dbt run --select emerge_consort_gira_int_cpt_procedures
-# dbt run --select emerge_consort_gira_int_cpt_drugs
-# dbt run --select emerge_consort_gira_int_cpt_devices
+dbt run --select emerge_consort_gira_int_cpt_measurements
+dbt run --select emerge_consort_gira_int_cpt_observations
+dbt run --select emerge_consort_gira_int_cpt_procedures
+dbt run --select emerge_consort_gira_int_cpt_drugs
+dbt run --select emerge_consort_gira_int_cpt_devices
 
-# dbt run --select emerge_consort_gira_int_icd_measurements
-# dbt run --select emerge_consort_gira_int_icd_observations
-# dbt run --select emerge_consort_gira_int_icd_procedures
-# dbt run --select emerge_consort_gira_int_icd_conditions
+dbt run --select emerge_consort_gira_int_icd_measurements
+dbt run --select emerge_consort_gira_int_icd_observations
+dbt run --select emerge_consort_gira_int_icd_procedures
+dbt run --select emerge_consort_gira_int_icd_conditions
 
-# dbt run --select emerge_consort_gira_int_person_persons
-
-# dbt run --select emerge_consort_gira_lookup_care_sites
+dbt run --select emerge_consort_gira_int_person_persons  #Corrects race/ethnicity cols and ensures concept_ids are Standard.
 
 
 # +
 # In Progress
-
-# dbt run --select emerge_consort_gira_lookup_care_sites
-
+# Deciding on primary key creation. Move back to int stage?
+# 
 
 # +
 # Stb tables

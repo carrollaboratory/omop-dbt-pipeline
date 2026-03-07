@@ -31,6 +31,6 @@ LEFT JOIN (SELECT
       s_concept_id, s_concept_code, src_concept_id
       FROM {{ ref('emerge_consort_gira_lookup_standards') }} 
       WHERE src_table = 'M'
-      AND domain_id != 'Measurement'
+      AND domain_id in ('Unit') -- gira_consort specific. From analysis the only vocabulary that joins to unit unit_concept_ids with Standard concepts.
       ) AS uci
     ON src.unit_concept_id = uci.src_concept_id
