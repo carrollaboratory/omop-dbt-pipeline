@@ -51,12 +51,12 @@
 # +
 # Stb tables
 # dbt run --select emerge_consort_gira_stb_person
-dbt run --select emerge_consort_gira_stb_measurement
+# dbt run --select emerge_consort_gira_stb_measurement
 # dbt run --select emerge_consort_gira_stb_observation
 # dbt run --select emerge_consort_gira_stb_drug_exposure
 # dbt run --select emerge_consort_gira_stb_visit_occurrence
 # dbt run --select emerge_consort_gira_stb_condition_occurrence
-# dbt run --select emerge_consort_gira_stb_care_site
+dbt run --select emerge_consort_gira_stb_care_site
 # dbt run --select emerge_consort_gira_stb_procedure_occurrence
 # dbt run --select emerge_consort_gira_stb_device_exposure
 

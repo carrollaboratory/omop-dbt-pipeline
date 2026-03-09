@@ -1,8 +1,8 @@
 {{ config(materialized='table') }}
 
     select
-    null::integer as "care_site_id",
-    site_name::text as "care_site_name", -- list of names for the caresites
+    {{ generate_key('none', 'consort_gira', 'site_id') }}::integer as "care_site_id",
+    site_name::text as "care_site_name",
     null::integer as "place_of_service_concept_id",
     null::integer as "location_id",
     site_id::text as "care_site_source_value",
