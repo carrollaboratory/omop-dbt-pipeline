@@ -42,7 +42,7 @@
 # dbt run --select emerge_consort_gira_int_icd_procedures
 # dbt run --select emerge_consort_gira_int_icd_conditions
 
-# dbt run --select emerge_consort_gira_int_person_persons  #Corrects race/ethnicity cols and ensures concept_ids are Standard.
+dbt run --select emerge_consort_gira_int_person_persons  #Corrects race/ethnicity cols and ensures concept_ids are Standard.
 
 # dbt run --select emerge_consort_gira_int_care_sites
 dbt run --select emerge_consort_gira_int_visit_occurrences
@@ -57,7 +57,7 @@ dbt run --select emerge_consort_gira_int_visit_occurrences
 dbt run --select emerge_consort_gira_stb_visit_occurrence
 # dbt run --select emerge_consort_gira_stb_condition_occurrence
 # dbt run --select emerge_consort_gira_stb_care_site
-# dbt run --select emerge_consort_gira_stb_procedure_occurrence
+dbt run --select emerge_consort_gira_stb_procedure_occurrence
 # dbt run --select emerge_consort_gira_stb_device_exposure
 
 

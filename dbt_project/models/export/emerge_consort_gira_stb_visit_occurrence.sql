@@ -20,5 +20,3 @@
         null::integer as "preceding_visit_occurrence_id",
         encounter_id::integer as "x_encounter_id"
     from {{ ref('emerge_consort_gira_int_visit_occurrences') }}
-    left join (select emerge_id, birth_date from {{ ref('emerge_consort_gira_int_person_persons') }} )
-    using (emerge_id)
