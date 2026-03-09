@@ -11,12 +11,12 @@ SELECT
     case
       when try_cast(range_low as float) is not null
       then try_cast(range_low as float)
-      else null -- TODO What to do when not a float. Example: >=40 Not sure why characterization report didn't pick this up
+      else null -- dropped
     end as range_low,    
     case
       when try_cast(range_high as float) is not null
       then try_cast(range_high as float)
-      else null -- TODO What to do when not a float. Example: >=40 Not sure why characterization report didn't pick this up
+      else null -- dropped
     end as range_high,
     range_flag,
     unit_concept_id,
