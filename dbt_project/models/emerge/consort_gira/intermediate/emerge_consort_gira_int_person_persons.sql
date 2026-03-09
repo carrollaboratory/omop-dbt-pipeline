@@ -21,7 +21,6 @@ with cleaned_race_ethnicity as (
 )
 
 select
-    src.row_id,
     src.emerge_id,
     src.withdrawal_status,
     src.year_of_birth,
@@ -30,12 +29,19 @@ select
          else make_date(1970, 6, 15)
     end as birth_date, --TODO What to do when year_of_birth is null?
     src.gender_concept_id,
-    max(case when cre.domain_id = 'Race' then cre.s_concept_id end) as race_concept_id,
-    max(case when cre.domain_id = 'Ethnicity' then cre.s_concept_id end) as ethnicity_concept_id,
-    src_index,
+    v.s_concept_id as "s_gender_concept_id",
+    race_ethnicity_concept_id,
+    max(case when cre.domain_id = 'Race' then cre.s_concept_id end) as s_race_concept_id,
+    max(case when cre.domain_id = 'Ethnicity' then cre.s_concept_id end) as s_ethnicity_concept_id,
 from {{ ref('emerge_consort_gira_src_emerge_person_ex_release_20260123') }} src
 left join cleaned_race_ethnicity cre
     on src.emerge_id = cre.emerge_id
     and cre.s_concept_id is not null
     and cre.domain_id in ('Race','Ethnicity')
-group by src.row_id, src.emerge_id, src.withdrawal_status, src.year_of_birth, src.gender_concept_id
+left join (
+    select s_concept_id, src_concept_id
+    from {{ ref('emerge_consort_gira_lookup_standards') }}
+    where vocabulary_id in ('Gender')
+) v
+    on src.gender_concept_id = v.src_concept_id
+group by src.emerge_id, src.withdrawal_status, src.year_of_birth, src.gender_concept_id, v.s_concept_id, cre.race_ethnicity_concept_id

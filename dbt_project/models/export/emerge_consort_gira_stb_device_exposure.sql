@@ -1,7 +1,7 @@
 {{ config(materialized='table') }}
     select
-    {{ generate_key(src_tbl='cpt',tgt_col='device_exposure_id',study_id='consort_gira',row_id='cpt.row_id') }}::integer as "device_exposure_id",
-    {{ generate_key(src_tbl='person',tgt_col='person_id',study_id='consort_gira',row_id='p.row_id') }}::integer as "person_id", -- TODO should macro.row_id be person_id or row_id for the Person primary key?
+    device_id::integer as "device_exposure_id",
+    person_id::integer as "person_id", -- TODO should macro.row_id be person_id or row_id for the Person primary key?
     s_device_concept_id::integer as "device_concept_id",
     date_add(birth_date, INTERVAL (age_at_event) YEAR)::date as "device_exposure_start_date",
     null::timestamp as "device_exposure_start_datetime",

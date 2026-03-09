@@ -78,6 +78,22 @@ code_cpt_concepts as (
     'CPT' as src_table
     FROM {{ ref('emerge_consort_gira_src_emerge_cpt_ex_release_20260129') }}
     WHERE cpt_code IS NOT NULL
+),
+
+code_bmi_units_concepts as (
+    SELECT DISTINCT null as concept_id,
+    unit_concept_name AS concept_code,
+    'BMI' as src_table
+    FROM {{ ref('emerge_consort_gira_src_emerge_bmi_ex_release_20260128') }}
+    WHERE unit_concept_id is null and unit_concept_name is not null
+),
+
+code_m_units_concepts as (
+    SELECT DISTINCT null as concept_id,
+    unit_concept_as_text AS concept_code,
+    'M' as src_table
+    FROM {{ ref('emerge_consort_gira_src_emerge_measurement_ex_release_20260127') }}
+    WHERE unit_concept_id is null and unit_concept_as_text is not null
 )
 
 
@@ -101,7 +117,21 @@ FROM code_cpt_concepts
 LEFT JOIN {{ ref('CONCEPT') }} AS concept
 ON code_cpt_concepts.concept_code = concept.concept_code 
 AND vocabulary_id = 'CPT4'
-    
 
+UNION
+
+SELECT *
+FROM code_bmi_units_concepts 
+LEFT JOIN {{ ref('CONCEPT') }} AS concept
+ON code_bmi_units_concepts.concept_code = concept.concept_code 
+AND domain_id = 'Unit'
+    
+UNION
+
+SELECT * 
+FROM code_m_units_concepts 
+LEFT JOIN {{ ref('CONCEPT') }} AS concept
+ON code_m_units_concepts.concept_code = concept.concept_code 
+AND domain_id = 'Unit'
 
 
