@@ -23,16 +23,13 @@
 # +
 # dbt run --select emerge_consort_gira_lookup_concepts
 # dbt run --select emerge_consort_gira_lookup_standards
-# dbt run --select emerge_consort_gira_lookup_care_sites
-# dbt run --select emerge_consort_gira_lookup_visits 
-# dbt run --select emerge_consort_gira_lookup_visits_array
 
 # +
 # Intermediate tables
-# dbt run --select emerge_consort_gira_int_bmi_measurements
+dbt run --select emerge_consort_gira_int_bmi_measurements
 
-# dbt run --select emerge_consort_gira_int_measurement_measurements
-# dbt run --select emerge_consort_gira_int_measurement_observations
+dbt run --select emerge_consort_gira_int_measurement_measurements
+dbt run --select emerge_consort_gira_int_measurement_observations
 
 # dbt run --select emerge_consort_gira_int_cpt_measurements
 # dbt run --select emerge_consort_gira_int_cpt_observations
@@ -46,6 +43,9 @@
 # dbt run --select emerge_consort_gira_int_icd_conditions
 
 # dbt run --select emerge_consort_gira_int_person_persons  #Corrects race/ethnicity cols and ensures concept_ids are Standard.
+
+dbt run --select emerge_consort_gira_int_care_sites
+dbt run --select emerge_consort_gira_int_visit_occurrences
 
 
 # +
