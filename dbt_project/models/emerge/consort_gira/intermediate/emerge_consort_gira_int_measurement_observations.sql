@@ -8,8 +8,16 @@ SELECT
     mci.s_concept_code as "s_measurement_concept_code",
     value_as_number,
     value_as_text,
-    range_low,
-    range_high,
+    case
+      when try_cast(range_low as float) is not null
+      then try_cast(range_low as float)
+      else null -- TODO What to do when not a float. Example: >=40 Not sure why characterization report didn't pick this up
+    end as range_low,    
+    case
+      when try_cast(range_high as float) is not null
+      then try_cast(range_high as float)
+      else null -- TODO What to do when not a float. Example: >=40 Not sure why characterization report didn't pick this up
+    end as range_high,
     range_flag,
     unit_concept_id,
     unit_concept_as_text,
