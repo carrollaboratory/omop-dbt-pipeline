@@ -11,7 +11,6 @@
     encounter_id,
     gira_ror,
     src_index,
-    {{ generate_key(domain_id='device',study_id='consort_gira',descriptor='encounter_id') }}::integer as "device_id"
     FROM {{ ref('emerge_consort_gira_src_emerge_cpt_ex_release_20260129') }} src
     JOIN (SELECT -- JOIN used to drop rows that are not domain 'Device'
           s_concept_id, s_concept_code, src_concept_code, src_concept_id
