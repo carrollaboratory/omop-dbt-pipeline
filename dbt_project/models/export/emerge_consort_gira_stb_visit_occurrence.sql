@@ -1,6 +1,7 @@
 {{ config(materialized='table') }}
 
     select
+        distinct
         visit_occurrence_id::integer as "visit_occurrence_id",
         emerge_id::integer as "person_id",
         0::integer as "visit_concept_id", -- derived 

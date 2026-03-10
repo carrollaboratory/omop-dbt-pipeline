@@ -1,10 +1,8 @@
 {{ config(materialized='table') }}
 
-with 
-unioned as (
+
     select
---     null::integer as "procedure_occurrence_id", -- Added in base query
-    src_index, -- Included to create the primary_key
+    {{ generate_key('icd', 'consort_gira', 'src_index') }}::integer as "procedure_occurrence_id",
     emerge_id::integer as "person_id",
     s_procedure_concept_id::integer as "procedure_concept_id",
     date_add(vo.birth_date, INTERVAL (vo.age_at_event) YEAR)::date as "procedure_date",
@@ -31,8 +29,7 @@ unioned as (
     union all
     
     select
---     null::integer as "procedure_occurrence_id", -- Added in base query
-    src_index, -- Included to create the primary_key
+    {{ generate_key('cpt', 'consort_gira', 'src_index') }}::integer as "procedure_occurrence_id",
     emerge_id::integer as "person_id",
     s_procedure_concept_id::integer as "procedure_concept_id",
     date_add(vo.birth_date, INTERVAL (vo.age_at_event) YEAR)::date as "procedure_date",
@@ -54,9 +51,3 @@ unioned as (
     from {{ ref('emerge_consort_gira_int_cpt_procedures') }} as cpt
     left join {{ ref('emerge_consort_gira_int_visit_occurrences') }} as vo
     using (emerge_id, encounter_id)
-)
-
-select 
-    src_index + 3000000::integer as "procedure_occurrence_id",
-    unioned.* exclude(src_index)
-from unioned
