@@ -11,13 +11,13 @@
     ethnicity_concept_id::integer as "ethnicity_concept_id",
     null::integer as "location_id",
     null::integer as "provider_id",
-    null::integer as "care_site_id", -- import care_site_id from care_site table
+    {{ generate_key('none', 'consort_gira', "substring(emerge_id, 1, 2)") }}::integer as "care_site_id",
     null::text as "person_source_value",
     gender_concept_id::text as "gender_source_value",
     gender_concept_id::integer as "gender_source_concept_id",
     race_concept_id::text as "race_source_value",
     race_concept_id::integer as "race_source_concept_id",
     ethnicity_concept_id::text as "ethnicity_source_value",
-    ethnicity_concept_id::integer as "ethnicity_source_concept_id"
+    ethnicity_concept_id::integer as "ethnicity_source_concept_id",
     from {{ ref('emerge_consort_gira_src_emerge_person_ex_release_20260123') }}
-    
+   
