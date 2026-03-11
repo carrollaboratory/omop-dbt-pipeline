@@ -8,3 +8,4 @@ _study_data
 !dbt_project/_pipeline_data/static/**/*
 
 __pycache__
+*.csv
