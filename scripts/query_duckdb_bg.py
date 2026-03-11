@@ -33,10 +33,53 @@ def execute(query):
         return pd.DataFrame(result.fetchall(), columns=[col[0] for col in result.description])
 
 
+# +
 table = execute(
-    "SELECT table_name FROM information_schema.tables WHERE table_schema = 'main_main'"
+    """SELECT table_name FROM information_schema.tables 
+    WHERE table_schema = 'main_main'
+    --AND (table_name like '%measur%')
+    --AND (table_name like '%icd%')
+    --AND (table_name like '%src%')
+    """
 )
 table
+
+shapes = []
+for t in table["table_name"]:
+    nrows = execute(f'SELECT COUNT(*) AS nrows FROM "main_main"."{t}"').iloc[0]["nrows"]
+    ncols = execute(f"""
+        SELECT COUNT(*) AS ncols
+        FROM information_schema.columns
+        WHERE table_schema = 'main_main'
+          AND table_name = '{t}'
+    """).iloc[0]["ncols"]
+    shapes.append({"table_name": t, "nrows": nrows, "ncols": ncols})
+
+shape_df = pd.DataFrame(shapes).sort_values("table_name")
+shape_df
+
+# +
+table = execute(
+    """SELECT table_name FROM information_schema.tables 
+    WHERE table_schema = 'main_main'
+    AND (table_name like '%observation%')
+    """
+)
+table
+
+shapes = []
+for t in table["table_name"]:
+    nrows = execute(f'SELECT COUNT(*) AS nrows FROM "main_main"."{t}"').iloc[0]["nrows"]
+    ncols = execute(f"""
+        SELECT COUNT(*) AS ncols
+        FROM information_schema.columns
+        WHERE table_schema = 'main_main'
+          AND table_name = '{t}'
+    """).iloc[0]["ncols"]
+    shapes.append({"table_name": t, "nrows": nrows, "ncols": ncols})
+
+shape_df = pd.DataFrame(shapes).sort_values("table_name")
+shape_df
 
 # +
 table = execute(
@@ -44,6 +87,23 @@ table = execute(
 )
 
 table
+
+# +
+table = execute(
+    """
+    SELECT * FROM main_main.emerge_consort_gira_int_cpt_observations
+    
+    """
+)
+table
+
+# table = execute(
+#     """
+#     SELECT * FROM main_main.emerge_consort_gira_stb_observation
+    
+#     """
+# )
+# table
 # -
 
 # # analysis
@@ -76,14 +136,6 @@ select
 from unique_site_ids u
 left join {{ ref('site_key_mapping') }} m
     on u.site_id = m.site_key
-    """
-)
-table
-
-table = execute(
-    """
-    SELECT * FROM main_main.emerge_consort_gira_int_person_demographics
-     where withdrawal_status = 0
     """
 )
 table
@@ -195,6 +247,7 @@ SELECT
 
 
 FROM agg_meas
+group by mci_domain_id
 
     """
 )
@@ -416,14 +469,37 @@ table
 table = execute(
     """
     SELECT
-        distinct measurement_concept_id, measurement_concept_name
+    *
         
-    FROM main_main.emerge_consort_gira_src_emerge_bmi_ex_release_20260128 bmi_src
+    FROM main_main.emerge_consort_gira_stb_observation
     
     
     """
 )
 table
+
+table = execute(
+    """
+    SELECT
+    count(*)
+        --distinct measurement_concept_id, measurement_concept_name
+    --FROM main_main.emerge_consort_gira_int_cpt_observations
+    --FROM main_main.emerge_consort_gira_stb_observation
+
+    --FROM main_main.emerge_consort_gira_src_emerge_cpt_ex_release_20260129
+    --FROM main_main.emerge_consort_gira_src_emerge_icd_ex_release_20260129
+    --FROM main_main.emerge_consort_gira_src_emerge_bmi_ex_release_20260128
+    --FROM main_main.emerge_consort_gira_src_emerge_measurement_ex_release_20260127
+    
+    
+    """
+)
+table
+# 5221255
+# 1077475 - src cpt
+# 4411520782 - src icd 
+# 2734571 - src bmi
+# 7297101 - src meas
 
 
 # # CPT
@@ -463,7 +539,8 @@ table = execute(
     FROM concept_cpt
 )
 SELECT 
-    cc_vocabulary_id,
+    --cc_vocabulary_id,
+    cc_domain_id,
     SUM(has_join) AS rows_with_concept_match,
     SUM(CASE WHEN has_join = 0 THEN 1 ELSE 0 END) AS rows_without_concept_match,
     SUM(CASE WHEN cc_standard_concept = 'S' THEN 1 ELSE 0 END) AS rows_with_standard_concept,
@@ -473,7 +550,7 @@ SELECT
 
 
 FROM agg_cpt
-GROUP BY cc_vocabulary_id
+GROUP BY cc_domain_id
     """
 )
 table
@@ -482,6 +559,45 @@ table
 
 
 # -
+
+ table = execute(
+    """
+
+        select 
+*
+        from main_main.emerge_consort_gira_lookup_concepts c
+where domain_id ='Observation'
+and (concept_id_1 != '4245997' or concept_id_1 is null)
+            """
+)
+table
+
+ table = execute(
+    """
+    SELECT
+    emerge_id,
+    age_at_event,
+    cpt_code,
+    mci.src_concept_id as "cpt_id", -- concept_id for the cpt_code. This could be non-standard. 
+    mci.s_concept_id as "s_observation_concept_id",
+    mci.s_concept_code as "s_observation_concept_code",
+    row_id,
+    encounter_id,
+    gira_ror,
+    src_index,
+    FROM main_main.emerge_consort_gira_src_emerge_cpt_ex_release_20260129 src
+    LEFT JOIN (SELECT
+          s_concept_id, s_concept_code, src_concept_code, src_concept_id
+          FROM main_main.emerge_consort_gira_lookup_standards
+          WHERE src_table = 'CPT'
+          AND domain_id = 'Observation'
+          ) AS mci
+        ON src.cpt_code = mci.src_concept_code
+    limit 100
+            """
+)
+table
+
 
 # # ICD
 
@@ -520,7 +636,7 @@ table = execute(
     FROM concept_icd
 )
 SELECT 
-    ic_vocabulary_id,
+    ic_domain_id,
     SUM(has_join) AS rows_with_concept_match,
     SUM(CASE WHEN has_join = 0 THEN 1 ELSE 0 END) AS rows_without_concept_match,
     SUM(CASE WHEN ic_standard_concept = 'S' THEN 1 ELSE 0 END) AS rows_with_standard_concept,
@@ -530,7 +646,7 @@ SELECT
 
 
 FROM agg_icd
-GROUP BY ic_vocabulary_id
+GROUP BY ic_domain_id
     """
 )
 table

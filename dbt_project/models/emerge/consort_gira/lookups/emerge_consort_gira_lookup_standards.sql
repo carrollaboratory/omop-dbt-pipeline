@@ -5,13 +5,13 @@
     
     filtered_concept as (
         select 
-        distinct concept_id as src_concept_id, 
-        concept_code as src_concept_code,
+        distinct concept_id_1 as src_concept_id, 
+        concept_code_1 as src_concept_code,
         src_table,
         vocabulary_id,
         domain_id
         from {{ ref ('emerge_consort_gira_lookup_concepts') }} c
-        where concept_id != '4245997' -- add the bmi concept standard manually.
+        where (concept_id_1 != '4245997' or concept_id_1 is null) -- add the bmi concept standard manually.
     ),
     
     ranked_relationships as (
