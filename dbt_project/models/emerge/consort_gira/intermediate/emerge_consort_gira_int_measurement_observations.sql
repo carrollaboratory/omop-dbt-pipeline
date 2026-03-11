@@ -4,8 +4,8 @@ SELECT
     emerge_id,
     age_at_event,
     measurement_concept_id,
-    mci.s_concept_id as "s_measurement_concept_id",
-    mci.s_concept_code as "s_measurement_concept_code",
+    mci.s_concept_id as "s_observation_concept_id",
+    mci.s_concept_code as "s_observation_concept_code",
     value_as_number,
     value_as_text,
     case

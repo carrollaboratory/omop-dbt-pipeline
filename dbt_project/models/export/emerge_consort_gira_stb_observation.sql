@@ -1,9 +1,9 @@
 {{ config(materialized='table') }}
 
-    select
+    select distinct
     {{ generate_key('measurement', 'consort_gira', 'src_index') }}::integer as "observation_id",
     emerge_id::integer as "person_id",
-    s_measurement_concept_id::integer as "observation_concept_id", -- concept_id from joined table
+    s_observation_concept_id::integer as "observation_concept_id", -- concept_id from joined table
     date_add(vo.birth_date, INTERVAL (vo.age_at_event) YEAR)::date as "observation_date", 
     null::timestamp as "observation_datetime", 
     32817::integer as "observation_type_concept_id",
@@ -31,7 +31,7 @@
     
     union all
     
-    select
+    select  distinct
     {{ generate_key('cpt', 'consort_gira', 'src_index') }}::integer as "observation_id",
     emerge_id::integer as "person_id",
     s_observation_concept_id::integer as "observation_concept_id", -- concept_id from joined table
@@ -62,7 +62,7 @@
     
     union all
     
-    select
+    select distinct
     {{ generate_key('icd', 'consort_gira', 'src_index') }}::integer as "observation_id",
     emerge_id::integer as "person_id",
     s_observation_concept_id::integer as "observation_concept_id", -- concept_id from joined table
