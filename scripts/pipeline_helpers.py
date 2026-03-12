@@ -18,8 +18,9 @@ export_tables = ['care_site',
                  'observation',
                  'person',
                  'procedure_occurrence',
-                 'visit_occurrence'
+                 'visit_occurrence',
                  'measurement']
+
 # -
 
 from pathlib import Path
@@ -39,14 +40,15 @@ else:
 engine = duckdb.connect("/tmp/dbt.duckdb")
 
 # +
-repo_home_dir = repo_home_dir
-output_study_dir =  repo_home_dir.parent / f"output_data/{study_id}"
-csv_output_dir = f'{output_dir / study_id}'
+repo_home_dir = Path.cwd().parent
+output_study_dir = repo_home_dir / f"../output_data/{study_id}"
+study_data_dir = repo_home_dir / study_data_dir
+csv_output_dir = output_study_dir / study_id
 bucket_study_dir = f'{bucket}/harmonized/{study_id}'
 
 paths = {
     "repo_home_dir": repo_home_dir,
-    "output_study_dir": output_dir,
+    "output_study_dir": output_study_dir,
     "src_data_dir": study_data_dir,
     "csv_output_dir": csv_output_dir,
     "bucket_study_dir": bucket_study_dir,
@@ -90,13 +92,21 @@ def execute(query):
 
 # # COPY tables from duckdb into pipeline/output_data/{study_id}/{table}.csv
 
+# for t in export_tables:
+#     input_tablename = f'{tgt_schema}.{export_prefix}{t}'
+#     output_filename = f'{paths["output_study_dir"]}/{t}.csv'
+#     
+#     t = engine.execute(
+#         f"COPY (SELECT * FROM {input_tablename}) TO '{output_filename}' (HEADER, DELIMITER ',')"
+#     ).fetchall()
+#     print(f'Printing {input_tablename} to {output_filename}.')
+
 for t in export_tables:
-    name = Path(t).stem.replace(export_prefix, "")
     input_tablename = f'{tgt_schema}.{export_prefix}{t}'
-    output_filename = f'{paths["output_study_dir"]}/{t}.csv'
+    output_filename = f'{paths["output_study_dir"]}/{t}.parquet'
     
     t = engine.execute(
-        f"COPY (SELECT * FROM {input_tablename}) TO '{output_filename}' (HEADER, DELIMITER ',')"
+        f"COPY (SELECT * FROM {input_tablename}) TO '{output_filename}' (FORMAT PARQUET)"
     ).fetchall()
     print(f'Printing {input_tablename} to {output_filename}.')
 

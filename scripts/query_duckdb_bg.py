@@ -55,8 +55,10 @@ for t in table["table_name"]:
     """).iloc[0]["ncols"]
     shapes.append({"table_name": t, "nrows": nrows, "ncols": ncols})
 
+    
 shape_df = pd.DataFrame(shapes).sort_values("table_name")
 shape_df
+
 
 # +
 table = execute(
@@ -87,24 +89,225 @@ table = execute(
 )
 
 table
+# -
 
-# +
 table = execute(
     """
-    SELECT * FROM main_main.emerge_consort_gira_int_cpt_observations
+    SELECT * 
+    FROM main_main.emerge_consort_gira_src_emerge_cpt_ex_release_20260129
+
+    where emerge_id = 6824934
+    and cpt_code = '77334'
     
     """
 )
 table
 
+table = execute(
+    """
+    SELECT count(*), device_exposure_id
+    FROM main_main.emerge_consort_gira_stb_device_exposure
+    group by device_exposure_id
+    """
+)
+table
+
+table = execute(
+    """
+    SELECT distinct *
+    FROM main_main.emerge_consort_gira_stb_device_exposure
+    where device_exposure_id = 203511056
+    """
+)
+table
+
+# +
 # table = execute(
 #     """
-#     SELECT * FROM main_main.emerge_consort_gira_stb_observation
-    
+#     SELECT count(*), visit_occurrence_id
+#     FROM main_main.emerge_consort_gira_int_visit_occurrences
+#     group by visit_occurrence_id
+#     order by count(*) desc
+#     limit 10
 #     """
 # )
 # table
+
+table = execute(
+    """
+    SELECT *
+    FROM main_main.emerge_consort_gira_int_visit_occurrences
+    where visit_occurrence_id = 206181155
+    """
+)
+table
 # -
+
+table = execute(
+    """
+    
+with unioned as (
+    select distinct emerge_id, encounter_id, age_at_event
+    from main_main.emerge_consort_gira_src_emerge_measurement_ex_release_20260127
+    where encounter_id = 40 and emerge_id = 3398642
+    union
+    select distinct emerge_id, encounter_id, age_at_event
+    from main_main.emerge_consort_gira_src_emerge_bmi_ex_release_20260128
+    where encounter_id = 40 and emerge_id = 3398642
+
+    union
+    select distinct emerge_id, encounter_id, age_at_event
+    from main_main.emerge_consort_gira_src_emerge_cpt_ex_release_20260129
+    where encounter_id = 40 and emerge_id = 3398642
+
+    union
+    select distinct emerge_id, encounter_id, age_at_event
+    from main_main.emerge_consort_gira_src_emerge_icd_ex_release_20260129
+    where encounter_id = 40 and emerge_id = 3398642
+
+    
+   ),
+add_index as (
+    select *, ROW_NUMBER() OVER () AS visit_index
+    from unioned
+    )
+  
+select *,
+CAST(200000000 AS INTEGER) + CAST(CONCAT('6', visit_index) AS INTEGER)::integer as "visit_occurrence_id",from add_index
+left join (select emerge_id, birth_date from main_main.emerge_consort_gira_int_person_persons )
+using (emerge_id)
+
+select *
+from unioned
+    """
+)
+table
+
+table = execute(
+    """
+select emerge_id, birth_date from main_main.emerge_consort_gira_int_person_persons 
+    where emerge_id = 3398642
+
+
+    
+    """
+)
+table
+
+table = execute(
+    """
+with cleaned_race_ethnicity as (
+    select
+        emerge_id,
+        s_concept_id,
+        concept_value as race_ethnicity_concept_id,
+        concept_type as original_column_flag,
+        domain_id
+    from "dbt"."main_main"."emerge_consort_gira_src_emerge_person_ex_release_20260123"
+         unpivot (concept_value for concept_type in (race_concept_id, ethnicity_concept_id)) p
+    left join (
+        select
+            s_concept_id, src_concept_id, s_concept_code, domain_id
+        from "dbt"."main_main"."emerge_consort_gira_lookup_standards"
+        where vocabulary_id in ('Race', 'Ethnicity')
+    ) v
+    on p.concept_value = v.src_concept_id
+    where concept_value is not null
+      and emerge_id = 3398642
+)
+
+select
+    src.emerge_id,
+    src.withdrawal_status,
+    src.year_of_birth,
+    case 
+        when year_of_birth is not null then make_date(CAST(year_of_birth as integer), 6, 15)
+        else make_date(1970, 6, 15)
+    end as birth_date, -- Handle null year_of_birth
+    src.gender_concept_id,
+    v.s_concept_id as s_gender_concept_id,
+    -- Aggregate to ensure one row per participant
+    MAX(case when cre.domain_id = 'Race' then cre.s_concept_id end) as s_race_concept_id,
+    MAX(case when cre.domain_id = 'Ethnicity' then cre.s_concept_id end) as s_ethnicity_concept_id
+from "dbt"."main_main"."emerge_consort_gira_src_emerge_person_ex_release_20260123" src
+left join cleaned_race_ethnicity cre
+    on src.emerge_id = cre.emerge_id
+    and cre.s_concept_id is not null
+    and cre.domain_id in ('Race', 'Ethnicity')
+left join (
+    select s_concept_id, src_concept_id
+    from "dbt"."main_main"."emerge_consort_gira_lookup_standards"
+    where vocabulary_id in ('Gender')
+) v
+    on src.gender_concept_id = v.src_concept_id
+where src.emerge_id = 3398642
+group by
+    src.emerge_id,
+    src.withdrawal_status,
+    src.year_of_birth,
+    src.gender_concept_id,
+    v.s_concept_id;
+
+    
+    """
+)
+table
+
+table = execute(
+    """
+    SELECT distinct *
+    FROM main_main.emerge_consort_gira_stb_device_exposure
+    where person_id = 6824934
+    --and device_concept_id = '77334'
+
+    
+    """
+)
+table
+
+table = execute(
+    """    
+    SELECT
+    emerge_id,
+    src.age_at_event,
+    cpt_code, -- direct from the source. Assume to be non-standard. 
+    mci.src_concept_id as "cpt_id",
+    mci.s_concept_id as "s_device_concept_id",
+    mci.s_concept_code as "s_device_concept_code",
+    row_id,
+    encounter_id,
+    gira_ror,
+    src_index,
+    FROM main_main.emerge_consort_gira_src_emerge_cpt_ex_release_20260129 src
+    JOIN (SELECT
+          s_concept_id, s_concept_code, src_concept_code, src_concept_id
+          FROM main_main.emerge_consort_gira_lookup_standards
+          WHERE src_table = 'CPT'
+          AND domain_id = 'Device'
+          ) AS mci
+        ON src.cpt_code = mci.src_concept_code
+    left join main_main.emerge_consort_gira_int_visit_occurrences as vo
+    using (emerge_id, encounter_id)
+    where emerge_id = 6824934
+    and cpt_code = '77334'
+        
+            
+    """
+)
+table
+
+table = execute(
+    """
+
+select *
+from main_main.emerge_consort_gira_int_visit_occurrences as vo
+where emerge_id = 6824934
+and encounter_id = 111
+       
+            
+    """
+)
+table
 
 # # analysis
 
@@ -253,83 +456,9 @@ group by mci_domain_id
 )
 table
 
-# measurement.measurement_concept_id
-
-# All join to the concept table
-# All are LOINC concepts
-# All are Standard
-# All are 'Measurement', or 'Observation' domain_ids.
-# ALL have 'Clinical Observation, Lab Test, LOINC Component'
-
-# rows_with_concept_match	rows_without_concept_match	rows_with_standard_concept	vocabulary_ids	domain_ids	concept_class_ids
-# 7682443.0	0.0	7604275.0	LOINC	Measurement, Observation	Clinical Observation, Lab Test, LOINC Component
-
-# +
-table = execute(
-    """
-    WITH concept_meas as (
-    SELECT
-        *
-    FROM main_main.emerge_consort_gira_src_emerge_measurement_ex_release_20260127 meas_src
-    LEFT JOIN (SELECT
-               concept_id as uci_concept_id,
-               concept_code as uci_concept_code,
-               standard_concept as uci_standard_concept,
-               vocabulary_id as uci_vocabulary_id,
-               domain_id as uci_domain_id,
-               concept_class_id as uci_concept_class_id
-               FROM main_main.emerge_consort_gira_lookup_concepts 
-               ) AS uci
-        ON meas_src.unit_concept_id = uci.uci_concept_id
-    ),
-    
-    agg_meas AS (
-    SELECT 
-        unit_concept_id,
-        
-        CASE 
-            WHEN uci_concept_id IS NOT NULL THEN 1 
-            ELSE 0 
-        END AS has_join,
-        uci_standard_concept,
-        uci_vocabulary_id,
-        uci_domain_id,
-        uci_concept_class_id
-    FROM concept_meas
-)
-SELECT 
-    uci_domain_id,
-    SUM(has_join) AS rows_with_concept_match,
-    SUM(CASE WHEN has_join = 0 THEN 1 ELSE 0 END) AS rows_without_concept_match,
-    SUM(CASE WHEN uci_standard_concept = 'S' THEN 1 ELSE 0 END) AS rows_with_standard_concept,
-    STRING_AGG(DISTINCT uci_vocabulary_id, ', ') AS vocabulary_ids,
-    STRING_AGG(DISTINCT uci_domain_id, ', ') AS domain_ids,
-    STRING_AGG(DISTINCT uci_concept_class_id, ', ') AS concept_class_ids
-
-
-FROM agg_meas
-GROUP BY uci_domain_id
-
-    """
-)
-table
-
-# measurement.unit_concept_id
-
-# Not all join to the concept table --TODO investigate
-# All domain_id:Unit rows join and are Standard
-# All domain_id:Metadata join and are not Standard  --TODO JOIN these to CONCEPT_RELATIONSHIP
-# TODO investigate the concepts that don't join, further.
-# TODO It may help to check if the measurement_concept_id are domain_id Measurement or Observation
-
-
-# uci_domain_id	rows_with_concept_match	rows_without_concept_match	rows_with_standard_concept	vocabulary_ids	domain_ids	concept_class_ids
-# 0	Unit	22501608.0	0.0	22411987.0	UCUM	Unit	Unit
-# 1	None	0.0	1601039.0	0.0	None	None	None
-# 2	Metadata	45030776.0	0.0	0.0	None	Metadata	Undefined
-
-
+# measurement.measurement_concept_id grouped by domain_id
 # -
+
 table = execute(
     """
 
@@ -407,153 +536,56 @@ table
 # +
 table = execute(
     """
-    WITH concept_bmi as (
+WITH concept_bmi as (
     SELECT
-        *
+    *
     FROM main_main.emerge_consort_gira_src_emerge_bmi_ex_release_20260128 bmi_src
-    LEFT JOIN (SELECT
-               concept_id as mci_concept_id,
-               concept_code as mci_concept_code,
-               standard_concept as mci_standard_concept,
-               vocabulary_id as mci_vocabulary_id,
-               domain_id as mci_domain_id,
-               concept_class_id as mci_concept_class_id
-               FROM main_main.emerge_consort_gira_lookup_concepts 
-               ) AS mci
-        ON bmi_src.measurement_concept_id = mci.mci_concept_id
-    ),
-    
-    agg_meas AS (
-    SELECT 
-        measurement_concept_id,
-        CASE 
-            WHEN mci_concept_id IS NOT NULL THEN 1 
-            ELSE 0 
-        END AS has_join,
-        mci_standard_concept,
-        mci_vocabulary_id,
-        mci_domain_id,
-        mci_concept_class_id
-    FROM concept_bmi
+    LEFT JOIN (select * from main_main.emerge_consort_gira_lookup_standards v where src_table = 'BMI') v
+    ON bmi_src.measurement_concept_id = v.src_concept_id
 )
-SELECT 
-    mci_concept_class_id,
-    SUM(has_join) AS rows_with_concept_match,
-    SUM(CASE WHEN has_join = 0 THEN 1 ELSE 0 END) AS rows_without_concept_match,
-    SUM(CASE WHEN mci_standard_concept = 'S' THEN 1 ELSE 0 END) AS rows_with_standard_concept,
-    STRING_AGG(DISTINCT mci_vocabulary_id, ', ') AS vocabulary_ids,
-    STRING_AGG(DISTINCT mci_domain_id, ', ') AS domain_ids,
-    STRING_AGG(DISTINCT mci_concept_class_id, ', ') AS concept_class_ids
 
-
-FROM agg_meas
-GROUP BY mci_concept_class_id
+    SELECT 
+    domain_id, 
+    SUM(CASE WHEN s_concept_id is not null and s_concept_id != 0 THEN 1 ELSE 0 END) AS rows_with_standard_concept,
+    SUM(CASE WHEN s_concept_id is not null  and s_concept_id = 0 THEN 1 ELSE 0 END) AS rows_with_0_standard_concept,
+    STRING_AGG(DISTINCT s_vocabulary_id, ', ') AS vocabulary_ids,
+    STRING_AGG(DISTINCT domain_id, ', ') AS domain_ids,
+    from concept_bmi
+    GROUP BY domain_id
 
     """
 )
 table
 
 # bmi.measurement_concept_id
-
-# All join to the concept table
-# All are LOINC or SNOMED concepts
-# All are Standard
-# All are 'Measurement' domain_ids.
-# ALL have 'Clinical Observation, Observable Entity'
-
-# 	mci_concept_class_id	rows_with_concept_match	rows_without_concept_match	rows_with_standard_concept	vocabulary_ids	domain_ids	concept_class_ids
-# 0	Clinical Observation	4430990.0	0.0	4430990.0	LOINC	Measurement	Clinical Observation
-# 1	Observable Entity	88721.0	0.0	88721.0	SNOMED	Measurement	Observable Entity
-
 # -
-table = execute(
-    """
-    SELECT
-    *
-        
-    FROM main_main.emerge_consort_gira_stb_observation
-    
-    
-    """
-)
-table
-
-table = execute(
-    """
-    SELECT
-    count(*)
-        --distinct measurement_concept_id, measurement_concept_name
-    --FROM main_main.emerge_consort_gira_int_cpt_observations
-    --FROM main_main.emerge_consort_gira_stb_observation
-
-    --FROM main_main.emerge_consort_gira_src_emerge_cpt_ex_release_20260129
-    --FROM main_main.emerge_consort_gira_src_emerge_icd_ex_release_20260129
-    --FROM main_main.emerge_consort_gira_src_emerge_bmi_ex_release_20260128
-    --FROM main_main.emerge_consort_gira_src_emerge_measurement_ex_release_20260127
-    
-    
-    """
-)
-table
-# 5221255
-# 1077475 - src cpt
-# 4411520782 - src icd 
-# 2734571 - src bmi
-# 7297101 - src meas
-
-
 # # CPT
 
 # +
 table = execute(
     """
-    WITH concept_cpt as (
+WITH concept_bmi as (
     SELECT
-        *
-    FROM main_main.emerge_consort_gira_src_emerge_cpt_ex_release_20260129 cpt_src
-    LEFT JOIN (SELECT
-               concept_id as cc_concept_id,
-               concept_code as cc_concept_code,
-               standard_concept as cc_standard_concept,
-               vocabulary_id as cc_vocabulary_id,
-               domain_id as cc_domain_id,
-               concept_class_id as cc_concept_class_id
-               FROM main_main.emerge_consort_gira_lookup_concepts 
-               ) AS cc
-        ON cpt_src.cpt_code = cc.cc_concept_code
-    ),
-    
-    agg_cpt AS (
-    SELECT 
-        cpt_code,
-        
-        CASE 
-            WHEN cpt_code IS NOT NULL THEN 1 
-            ELSE 0 
-        END AS has_join,
-        cc_concept_id
-        cc_standard_concept,
-        cc_vocabulary_id,
-        cc_domain_id,
-        cc_concept_class_id
-    FROM concept_cpt
+    *
+    FROM main_main.emerge_consort_gira_src_emerge_cpt_ex_release_20260129 bmi_src
+    LEFT JOIN (select * from main_main.emerge_consort_gira_lookup_standards v where src_table = 'CPT') v
+    ON  = v.src_concept_id
 )
-SELECT 
-    --cc_vocabulary_id,
-    cc_domain_id,
-    SUM(has_join) AS rows_with_concept_match,
-    SUM(CASE WHEN has_join = 0 THEN 1 ELSE 0 END) AS rows_without_concept_match,
-    SUM(CASE WHEN cc_standard_concept = 'S' THEN 1 ELSE 0 END) AS rows_with_standard_concept,
-    STRING_AGG(DISTINCT cc_vocabulary_id, ', ') AS vocabulary_ids,
-    STRING_AGG(DISTINCT cc_domain_id, ', ') AS domain_ids,
-    STRING_AGG(DISTINCT cc_concept_class_id, ', ') AS concept_class_ids
 
+    SELECT 
+    domain_id, 
+    SUM(CASE WHEN s_concept_id is not null and s_concept_id != 0 THEN 1 ELSE 0 END) AS rows_with_standard_concept,
+    SUM(CASE WHEN s_concept_id is not null  and s_concept_id = 0 THEN 1 ELSE 0 END) AS rows_with_0_standard_concept,
+    STRING_AGG(DISTINCT s_vocabulary_id, ', ') AS vocabulary_ids,
+    STRING_AGG(DISTINCT domain_id, ', ') AS domain_ids,
+    from concept_bmi
+    GROUP BY domain_id
 
-FROM agg_cpt
-GROUP BY cc_domain_id
     """
 )
 table
+
+# bmi.measurement_concept_id
 
 
 
