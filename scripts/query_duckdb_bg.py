@@ -37,9 +37,7 @@ def execute(query):
 table = execute(
     """SELECT table_name FROM information_schema.tables 
     WHERE table_schema = 'main_main'
-    --AND (table_name like '%measur%')
-    --AND (table_name like '%icd%')
-    --AND (table_name like '%src%')
+    AND (table_name like '%stb%' OR table_name like '%int%')
     """
 )
 table
@@ -58,15 +56,14 @@ for t in table["table_name"]:
     
 shape_df = pd.DataFrame(shapes).sort_values("table_name")
 shape_df
-
-
-# +
-table = execute(
-    "PRAGMA table_info('main_main.emerge_consort_gira_int_person_demographics')"
-)
-
-table
 # -
+
+
+# table = execute(
+#     "PRAGMA table_info('main_main.emerge_consort_gira_int_person_persons')"
+# )
+#
+# table
 
 # # analysis
 
@@ -76,7 +73,7 @@ table = execute(
     sum(case when withdrawal_status = 1 then 1 else 0 end) as '1_active',
     sum(case when withdrawal_status = 0 then 1 else 0 end) as '0_withdrawn',
     sum(case when (withdrawal_status not in (1, 0) or withdrawal_status is null) then 1 else 0 end) as 'unexpected_status'
-    FROM main_main.emerge_consort_gira_int_person_demographics
+    FROM main_main.emerge_consort_gira_int_person_persons
     """
 )
 table
@@ -131,7 +128,7 @@ group by mci_domain_id
 )
 table
 
-# measurement.measurement_concept_id grouped by domain_id
+# src measurement.measurement_concept_id joined to CONCEPT grouped by domain_id
 # -
 
 table = execute(
@@ -141,7 +138,7 @@ table = execute(
     SELECT
       range_low,
       COUNT(*) AS row_count
-    FROM main_main.emerge_consort_gira_int_measurement_measurements
+    FROM main_main.emerge_consort_gira_src_emerge_measurement_ex_release_20260127
     WHERE range_low IS NOT NULL
     AND TRY_CAST(range_low AS INTEGER) IS NULL
     GROUP BY range_low
@@ -159,7 +156,7 @@ table = execute(
     SELECT
       range_high,
       COUNT(*) AS row_count
-    FROM main_main.emerge_consort_gira_int_measurement_measurements
+    FROM main_main.emerge_consort_gira_src_emerge_measurement_ex_release_20260127
     WHERE range_high IS NOT NULL
     AND TRY_CAST(range_high AS INTEGER) IS NULL
     GROUP BY range_high
@@ -241,7 +238,7 @@ group by mci_domain_id
 )
 table
 
-# bmi.measurement_concept_id
+# src bmi.measurement_concept_id joined to CONCEPT grouped by domain_id
 # -
 # # CPT
 
@@ -294,12 +291,12 @@ group by mci_domain_id
 )
 table
 
-# cpt.cpt_code
-
+# src cpt.cpt_code joined to CONCEPT grouped by domain_id
 # -
 
 # # ICD
 
+# +
 table = execute(
     """
     WITH concept_icd as (
@@ -349,6 +346,9 @@ GROUP BY ic_domain_id
 )
 table
 
+# src icd.icd_code joined to CONCEPT grouped by domain_id
+# -
+
 # # vocabulary
 
 # +
@@ -365,64 +365,17 @@ table
 #  TODO Add tests to a 'src_data/concept_info' model(int?) to assert domains are expected as well as vocabularies.
 #  EX: If the src measurement table is refreshed and now has a few procedures, or rows that don't join to the vocab at all.
 # -
+# # Other
 
-table = execute(
-    """
-    SELECT 
-    sum(case when s_concept_id is null then 1 else 0 end) as n_null_standards
-    ,sum(case when s_concept_id = 0 then 1 else 0 end) as n_invalid_standards
-    ,sum(case when s_concept_id is not null and s_concept_id != 0 then 1 else 0 end) as n_valid_standards
-    FROM main_main.emerge_consort_gira_lookup_standards s
-    
-     """
-)
-table
 
 # +
-table = execute(
-    """
-    
-    WITH filtered_concept as (
-    SELECT 
-    distinct concept_id, concept_code, src_table, vocabulary_id, standard_concept, concept_id_1, concept_code_1
-    FROM main_main.emerge_consort_gira_lookup_concepts c
-    WHERE standard_concept IS NULL
-    ),
-    
-    filtered_cr as (    
-    SELECT src_table, vocabulary_id, standard_concept, concept_id_2
-    FROM filtered_concept fc
-    LEFT JOIN (SELECT * FROM main_main.CONCEPT_RELATIONSHIP WHERE relationship_id = 'Maps to') cr
-    ON fc.concept_id_1 = cr.concept_id_1
-    )
-    
-    SELECT
-      src_table, vocabulary_id, standard_concept,
-          SUM(CASE WHEN vocabulary_id IS NULL THEN 1 ELSE 0 END) as n_no_concept_join,
-          SUM(CASE WHEN concept_id_2 IS NULL THEN 1 ELSE 0 END) as 'n_no_standard',
-
-    FROM filtered_cr
-    WHERE concept_id_2 IS NULL -- Filter out those that join to concept_relationship
-    GROUP BY  src_table, vocabulary_id, standard_concept
-
-    
-    """
-)
-table
-
-# The following are a subset of source codes/ids that are not Standard concepts.
-# 1. Some don't join to the CONCEPT table at all. See column 'n_no_concept_join'
-# 2. Some viable concepts don't have a mapped Standard concept 
+#  Look into concepts that don't join to standards. breakdown by site_id
 # -
 
-table = execute(
-    """
-    select * -- TODO make sure there are not more than one relationship 'Maps to'. Check for duplicates.
-                   from main_main.CONCEPT_RELATIONSHIP
-                   
-                   where relationship_id = 'Maps to'  -- and invalid_reason is NULL
-                   
-""")
-table
+
+
+
+
+
 
 
