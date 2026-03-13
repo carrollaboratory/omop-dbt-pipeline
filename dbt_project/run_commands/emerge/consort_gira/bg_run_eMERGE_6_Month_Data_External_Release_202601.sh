@@ -18,11 +18,11 @@
 # dbt run --select emerge_consort_gira_src_emerge_icd_ex_release_20260129
 # dbt run --select CONCEPT
 # dbt run --select CONCEPT_RELATIONSHIP
-# -
 
 
+# +
 # dbt run --select emerge_consort_gira_lookup_concepts
-dbt run --select emerge_consort_gira_lookup_standards
+# dbt run --select emerge_consort_gira_lookup_standards
 
 # +
 # Intermediate tables
@@ -37,7 +37,7 @@ dbt run --select emerge_consort_gira_lookup_standards
 # dbt run --select emerge_consort_gira_int_cpt_drugs
 # dbt run --select emerge_consort_gira_int_cpt_devices
 
-dbt run --select emerge_consort_gira_int_icd_measurements
+# dbt run --select emerge_consort_gira_int_icd_measurements
 # dbt run --select emerge_consort_gira_int_icd_observations
 # dbt run --select emerge_consort_gira_int_icd_procedures
 # dbt run --select emerge_consort_gira_int_icd_conditions
@@ -50,8 +50,8 @@ dbt run --select emerge_consort_gira_int_icd_measurements
 
 # +
 # Stb tables
-# dbt run --select emerge_consort_gira_stb_person
-dbt run --select emerge_consort_gira_stb_measurement
+dbt run --select emerge_consort_gira_stb_person
+# dbt run --select emerge_consort_gira_stb_measurement
 # dbt run --select emerge_consort_gira_stb_observation
 # dbt run --select emerge_consort_gira_stb_drug_exposure
 # dbt run --select emerge_consort_gira_stb_visit_occurrence
@@ -59,7 +59,6 @@ dbt run --select emerge_consort_gira_stb_measurement
 # dbt run --select emerge_consort_gira_stb_care_site
 # dbt run --select emerge_consort_gira_stb_procedure_occurrence
 # dbt run --select emerge_consort_gira_stb_device_exposure
-
 
 
 # dbt run --select emerge_consort_gira_stb_observation_period
