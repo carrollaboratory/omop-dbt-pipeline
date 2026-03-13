@@ -23,11 +23,8 @@ with cleaned_race_ethnicity as (
 select
     src.emerge_id,
     src.withdrawal_status,
-    src.year_of_birth,
-    case 
-        when year_of_birth is not null then make_date(CAST(year_of_birth as integer), 6, 15)
-        else make_date(1970, 6, 15)
-    end as birth_date, -- Handle null year_of_birth
+    coalesce(CAST(src.year_of_birth as integer),1970) as year_of_birth, -- Handle null year_of_birth
+    make_date(CAST(year_of_birth as integer), 6, 15) as birth_date, 
     src.gender_concept_id,
     v.s_concept_id as s_gender_concept_id,
     -- Aggregate to ensure one row per participant

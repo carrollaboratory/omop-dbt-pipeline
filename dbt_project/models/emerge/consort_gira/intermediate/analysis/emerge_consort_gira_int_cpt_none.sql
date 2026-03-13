@@ -17,6 +17,6 @@
           FROM {{ ref('emerge_consort_gira_lookup_standards') }} 
           WHERE src_table = 'CPT'
           AND (domain_id is null
-              or domain_id is not in ('Measurement','Observation','Procedure','Drug','Device'))
+              or domain_id not in ('Measurement','Observation','Procedure','Drug','Device'))
           ) AS mci
         ON src.cpt_code = mci.src_concept_code

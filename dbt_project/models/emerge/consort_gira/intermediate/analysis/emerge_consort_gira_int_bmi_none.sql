@@ -24,7 +24,7 @@ JOIN (SELECT -- JOIN used to drop rows that are not domain 'Measurement'
       FROM {{ ref('emerge_consort_gira_lookup_standards') }} 
       WHERE src_table = 'BMI'
       AND (domain_id is null
-          or domain_id is not in ('Measurement'))
+          or domain_id not in ('Measurement'))
       ) AS mci
     ON src.measurement_concept_id = mci.src_concept_id
 LEFT JOIN (SELECT

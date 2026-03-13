@@ -65,7 +65,7 @@
                     else 0 end as "concept_id",
                case when cast(valid_end_date as string) = '20991231' then concept_code
                     else null end as "concept_code"
-               from main_main.CONCEPT
+               from {{ ref('CONCEPT') }}
                ) as base_concept
     on jcr.concept_id_2 = base_concept.concept_id
 
