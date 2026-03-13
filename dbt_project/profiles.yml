@@ -3,4 +3,5 @@ omop-dbt-pipeline:
   outputs:
     dev:
       type: duckdb
-      path: /tmp/dbt.duckdb
+      # path: /tmp/dbt.duckdb
+      path: ~/dbt.duckdb
