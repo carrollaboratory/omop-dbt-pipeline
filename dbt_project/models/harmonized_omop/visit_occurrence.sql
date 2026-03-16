@@ -11,7 +11,7 @@
         null::timestamp as "visit_end_datetime",
         32817::integer as "visit_type_concept_id", -- derived
         null::integer as "provider_id",
-        substring(emerge_id, 1, 2)::integer as "care_site_id",
+        {{ generate_key('none', 'consort_gira', substring(emerge_id, 1, 2)) }}::integer as "care_site_id",
         null::text as "visit_source_value",
         null::integer as "visit_source_concept_id",
         null::integer as "admitted_from_concept_id",

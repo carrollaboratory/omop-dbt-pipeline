@@ -26,10 +26,10 @@ select
     coalesce(CAST(src.year_of_birth as integer),1970) as year_of_birth, -- Handle null year_of_birth
     make_date(CAST(year_of_birth as integer), 6, 15) as birth_date, 
     src.gender_concept_id,
-    v.s_concept_id as s_gender_concept_id,
+    coalesce(v.s_concept_id, 0) as s_gender_concept_id,
     -- Aggregate to ensure one row per participant
-    MAX(case when cre.domain_id = 'Race' then cre.s_concept_id end) as s_race_concept_id,
-    MAX(case when cre.domain_id = 'Ethnicity' then cre.s_concept_id end) as s_ethnicity_concept_id
+    MAX(case when cre.domain_id = 'Race' then cre.s_concept_id else '0' end) as s_race_concept_id,
+    MAX(case when cre.domain_id = 'Ethnicity' then cre.s_concept_id else '0' end) as s_ethnicity_concept_id
 from {{ ref('emerge_consort_gira_src_emerge_person_ex_release_20260123') }} src
 left join cleaned_race_ethnicity cre
     on src.emerge_id = cre.emerge_id

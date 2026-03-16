@@ -7,7 +7,7 @@
     s_drug_concept_id::integer as "drug_concept_id",
     date_add(vo.birth_date, INTERVAL (vo.age_at_event) YEAR)::date as "drug_exposure_start_date",
     null::timestamp as "drug_exposure_start_datetime",
-    null::text as "drug_exposure_end_date",
+    date_add(vo.birth_date, INTERVAL (vo.age_at_event) YEAR)::date::text as "drug_exposure_end_date",
     null::timestamp as "drug_exposure_end_datetime",
     null::text as "verbatim_end_date",
     32817::integer as "drug_type_concept_id",

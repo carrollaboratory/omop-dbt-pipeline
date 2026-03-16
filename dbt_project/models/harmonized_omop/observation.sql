@@ -68,7 +68,7 @@
     s_observation_concept_id::integer as "observation_concept_id", -- concept_id from joined table
     date_add(vo.birth_date, INTERVAL (vo.age_at_event) YEAR)::date as "observation_date", 
     null::timestamp as "observation_datetime", 
-    null::integer as "observation_type_concept_id", -- required but unknown in the data
+    32817::integer as "observation_type_concept_id", -- required but unknown in the data
     null::float as "value_as_number",
     null::text as "value_as_string",
     null::text as "value_as_concept_id",

@@ -1,0 +1,370 @@
+models:
+  - name: emerge_consort_gira_int_bmi_measurements
+    description: "Intermediate model for BMI measurements."
+    columns:
+      - name: emerge_id
+        description: "eMERGE ID"
+      - name: age_at_event
+        description: "Age at event"
+      - name: measurement_concept_id
+        description: "Measurement concept ID"
+      - name: measurement_concept_name
+        description: "Measurement concept name"
+      - name: s_measurement_concept_id
+        description: "Standard measurement concept ID"
+      - name: s_measurement_concept_code
+        description: "Standard measurement concept code"
+      - name: value_as_number
+        description: "Value as number"
+      - name: unit_concept_id
+        description: "Unit concept ID"
+      - name: unit_concept_name
+        description: "Unit concept name"
+      - name: s_unit_concept_id
+        description: "Standard unit concept ID"
+      - name: s_unit_concept_code
+        description: "Standard unit concept code"
+      - name: bmi_z_score
+        description: "BMI Z-score"
+      - name: row_id
+        description: "Row ID"
+      - name: encounter_id
+        description: "Encounter ID"
+      - name: gira_ror
+        description: "GIRA ROR"
+      - name: src_index
+        description: "Source index"
+  - name: emerge_consort_gira_int_care_sites
+    description: "Intermediate model for care sites."
+    columns:
+      - name: site_id
+        description: "Site ID"
+      - name: site_name
+        description: "Site name"
+  - name: emerge_consort_gira_int_cpt_devices
+    description: "Intermediate model for CPT devices."
+    columns:
+      - name: emerge_id
+        description: "eMERGE ID"
+      - name: age_at_event
+        description: "Age at event"
+      - name: cpt_code
+        description: "CPT code"
+      - name: cpt_id
+        description: "CPT ID"
+      - name: s_device_concept_id
+        description: "Standard device concept ID"
+      - name: s_device_concept_code
+        description: "Standard device concept code"
+      - name: row_id
+        description: "Row ID"
+      - name: encounter_id
+        description: "Encounter ID"
+      - name: gira_ror
+        description: "GIRA ROR"
+      - name: src_index
+        description: "Source index"
+  - name: emerge_consort_gira_int_cpt_drugs
+    description: "Intermediate model for CPT drugs."
+    columns:
+      - name: emerge_id
+        description: "eMERGE ID"
+      - name: age_at_event
+        description: "Age at event"
+      - name: cpt_code
+        description: "CPT code"
+      - name: cpt_id
+        description: "CPT ID"
+      - name: s_drug_concept_id
+        description: "Standard drug concept ID"
+      - name: s_drug_concept_code
+        description: "Standard drug concept code"
+      - name: row_id
+        description: "Row ID"
+      - name: encounter_id
+        description: "Encounter ID"
+      - name: gira_ror
+        description: "GIRA ROR"
+      - name: src_index
+        description: "Source index"
+  - name: emerge_consort_gira_int_cpt_measurements
+    description: "Intermediate model for CPT measurements."
+    columns:
+      - name: emerge_id
+        description: "eMERGE ID"
+      - name: age_at_event
+        description: "Age at event"
+      - name: cpt_code
+        description: "CPT code"
+      - name: cpt_id
+        description: "CPT ID"
+      - name: s_measurement_concept_id
+        description: "Standard measurement concept ID"
+      - name: s_measurement_concept_code
+        description: "Standard measurement concept code"
+      - name: row_id
+        description: "Row ID"
+      - name: encounter_id
+        description: "Encounter ID"
+      - name: gira_ror
+        description: "GIRA ROR"
+      - name: src_index
+        description: "Source index"
+  - name: emerge_consort_gira_int_cpt_observations
+    description: "Intermediate model for CPT observations."
+    columns:
+      - name: emerge_id
+        description: "eMERGE ID"
+      - name: age_at_event
+        description: "Age at event"
+      - name: cpt_code
+        description: "CPT code"
+      - name: cpt_id
+        description: "CPT ID"
+      - name: s_observation_concept_id
+        description: "Standard observation concept ID"
+      - name: s_observation_concept_code
+        description: "Standard observation concept code"
+      - name: row_id
+        description: "Row ID"
+      - name: encounter_id
+        description: "Encounter ID"
+      - name: gira_ror
+        description: "GIRA ROR"
+      - name: src_index
+        description: "Source index"
+  - name: emerge_consort_gira_int_cpt_procedures
+    description: "Intermediate model for CPT procedures."
+    columns:
+      - name: emerge_id
+        description: "eMERGE ID"
+      - name: age_at_event
+        description: "Age at event"
+      - name: cpt_code
+        description: "CPT code"
+      - name: cpt_id
+        description: "CPT ID"
+      - name: s_procedure_concept_id
+        description: "Standard procedure concept ID"
+      - name: s_procedure_concept_code
+        description: "Standard procedure concept code"
+      - name: row_id
+        description: "Row ID"
+      - name: encounter_id
+        description: "Encounter ID"
+      - name: gira_ror
+        description: "GIRA ROR"
+      - name: src_index
+        description: "Source index"
+  - name: emerge_consort_gira_int_icd_conditions
+    description: "Intermediate model for ICD conditions."
+    columns:
+      - name: emerge_id
+        description: "eMERGE ID"
+      - name: age_at_event
+        description: "Age at event"
+      - name: icd_code
+        description: "ICD code"
+      - name: icd_id
+        description: "ICD ID"
+      - name: s_condition_concept_id
+        description: "Standard condition concept ID"
+      - name: s_condition_concept_code
+        description: "Standard condition concept code"
+      - name: icd_flag
+        description: "ICD flag"
+      - name: row_id
+        description: "Row ID"
+      - name: encounter_id
+        description: "Encounter ID"
+      - name: gira_ror
+        description: "GIRA ROR"
+      - name: src_index
+        description: "Source index"
+  - name: emerge_consort_gira_int_icd_measurements
+    description: "Intermediate model for ICD measurements."
+    columns:
+      - name: emerge_id
+        description: "eMERGE ID"
+      - name: age_at_event
+        description: "Age at event"
+      - name: icd_code
+        description: "ICD code"
+      - name: icd_id
+        description: "ICD ID"
+      - name: s_measurement_concept_id
+        description: "Standard measurement concept ID"
+      - name: s_measurement_concept_code
+        description: "Standard measurement concept code"
+      - name: icd_flag
+        description: "ICD flag"
+      - name: row_id
+        description: "Row ID"
+      - name: encounter_id
+        description: "Encounter ID"
+      - name: gira_ror
+        description: "GIRA ROR"
+      - name: src_index
+        description: "Source index"
+  - name: emerge_consort_gira_int_icd_observations
+    description: "Intermediate model for ICD observations."
+    columns:
+      - name: emerge_id
+        description: "eMERGE ID"
+      - name: age_at_event
+        description: "Age at event"
+      - name: icd_code
+        description: "ICD code"
+      - name: icd_id
+        description: "ICD ID"
+      - name: s_observation_concept_id
+        description: "Standard observation concept ID"
+      - name: s_observation_concept_code
+        description: "Standard observation concept code"
+      - name: icd_flag
+        description: "ICD flag"
+      - name: row_id
+        description: "Row ID"
+      - name: encounter_id
+        description: "Encounter ID"
+      - name: gira_ror
+        description: "GIRA ROR"
+      - name: src_index
+        description: "Source index"
+  - name: emerge_consort_gira_int_icd_procedures
+    description: "Intermediate model for ICD procedures."
+    columns:
+      - name: emerge_id
+        description: "eMERGE ID"
+      - name: age_at_event
+        description: "Age at event"
+      - name: icd_code
+        description: "ICD code"
+      - name: icd_id
+        description: "ICD ID"
+      - name: s_procedure_concept_id
+        description: "Standard procedure concept ID"
+      - name: s_procedure_concept_code
+        description: "Standard procedure concept code"
+      - name: icd_flag
+        description: "ICD flag"
+      - name: row_id
+        description: "Row ID"
+      - name: encounter_id
+        description: "Encounter ID"
+      - name: gira_ror
+        description: "GIRA ROR"
+      - name: src_index
+        description: "Source index"
+  - name: emerge_consort_gira_int_measurement_measurements
+    description: "Intermediate model for measurement measurements."
+    columns:
+      - name: emerge_id
+        description: "eMERGE ID"
+      - name: age_at_event
+        description: "Age at event"
+      - name: measurement_concept_id
+        description: "Measurement concept ID"
+      - name: s_measurement_concept_id
+        description: "Standard measurement concept ID"
+      - name: s_measurement_concept_code
+        description: "Standard measurement concept code"
+      - name: value_as_number
+        description: "Value as number"
+      - name: value_as_text
+        description: "Value as text"
+      - name: range_low
+        description: "Range low"
+      - name: range_high
+        description: "Range high"
+      - name: range_flag
+        description: "Range flag"
+      - name: unit_concept_id
+        description: "Unit concept ID"
+      - name: unit_concept_as_text
+        description: "Unit concept as text"
+      - name: s_unit_concept_id
+        description: "Standard unit concept ID"
+      - name: s_unit_concept_code
+        description: "Standard unit concept code"
+      - name: row_id
+        description: "Row ID"
+      - name: encounter_id
+        description: "Encounter ID"
+      - name: gira_ror
+        description: "GIRA ROR"
+      - name: src_index
+        description: "Source index"
+  - name: emerge_consort_gira_int_measurement_observations
+    description: "Intermediate model for measurement observations."
+    columns:
+      - name: emerge_id
+        description: "eMERGE ID"
+      - name: age_at_event
+        description: "Age at event"
+      - name: measurement_concept_id
+        description: "Measurement concept ID"
+      - name: s_observation_concept_id
+        description: "Standard observation concept ID"
+      - name: s_observation_concept_code
+        description: "Standard observation concept code"
+      - name: value_as_number
+        description: "Value as number"
+      - name: value_as_text
+        description: "Value as text"
+      - name: range_low
+        description: "Range low"
+      - name: range_high
+        description: "Range high"
+      - name: range_flag
+        description: "Range flag"
+      - name: unit_concept_id
+        description: "Unit concept ID"
+      - name: unit_concept_as_text
+        description: "Unit concept as text"
+      - name: s_unit_concept_id
+        description: "Standard unit concept ID"
+      - name: s_unit_concept_code
+        description: "Standard unit concept code"
+      - name: row_id
+        description: "Row ID"
+      - name: encounter_id
+        description: "Encounter ID"
+      - name: gira_ror
+        description: "GIRA ROR"
+      - name: src_index
+        description: "Source index"
+  - name: emerge_consort_gira_int_person_persons
+    description: "Intermediate model for person persons."
+    columns:
+      - name: emerge_id
+        description: "eMERGE ID"
+      - name: withdrawal_status
+        description: "Withdrawal status"
+      - name: year_of_birth
+        description: "Year of birth"
+      - name: birth_date
+        description: "Birth date"
+      - name: gender_concept_id
+        description: "Gender concept ID"
+      - name: s_gender_concept_id
+        description: "Standard gender concept ID"
+      - name: s_race_concept_id
+        description: "Standard race concept ID"
+      - name: s_ethnicity_concept_id
+        description: "Standard ethnicity concept ID"
+  - name: emerge_consort_gira_int_visit_occurrences
+    description: "Intermediate model for visit occurrences."
+    columns:
+      - name: emerge_id
+        description: "eMERGE ID"
+      - name: encounter_id
+        description: "Encounter ID"
+      - name: age_at_event
+        description: "Age at event"
+      - name: visit_index
+        description: "Visit index"
+      - name: visit_occurrence_id
+        description: "Visit occurrence ID"
+      - name: birth_date
+        description: "Birth date"
