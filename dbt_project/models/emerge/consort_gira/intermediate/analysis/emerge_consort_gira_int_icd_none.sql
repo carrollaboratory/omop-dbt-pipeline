@@ -14,10 +14,11 @@ SELECT
     src_index,
 FROM {{ ref('emerge_consort_gira_src_emerge_icd_ex_release_20260129') }} src
     JOIN (SELECT -- JOIN used to drop rows that are not domain 'Condition'
-          s_concept_id, s_concept_code, src_concept_id, src_concept_code
+          s_concept_id, s_concept_code, src_concept_code, src_concept_id
           FROM {{ ref('emerge_consort_gira_lookup_standards') }} 
-          WHERE src_table = 'ICD'
+          WHERE src_table = 'CPT'
           AND (domain_id is null
-              or domain_id not in ('Condition','Measurement','Observation','Procedure'))
+              or domain_id not in ('Measurement','Observation','Procedure','Drug','Device')
+              or s_concept_id = '0')
           ) AS mci
         ON src.icd_code = mci.src_concept_code

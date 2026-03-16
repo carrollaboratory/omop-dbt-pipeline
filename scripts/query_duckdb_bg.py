@@ -19,7 +19,7 @@ if os.environ.get("WORKSPACE_BUCKET"):
 else:
     bucket = "bucket_placeholder"
 
-engine = duckdb.connect("/tmp/dbt.duckdb")
+engine = duckdb.connect("~/dbt.duckdb")
 
 
 def execute(query):
@@ -36,8 +36,8 @@ def execute(query):
 # +
 table = execute(
     """SELECT table_name FROM information_schema.tables 
-    WHERE table_schema = 'main_main'
-    AND (table_name like '%stb%' OR table_name like '%int%')
+    WHERE table_schema like 'main_main'
+    --AND (table_name like '%stb%' OR table_name like '%int%')
     """
 )
 table
@@ -56,8 +56,78 @@ for t in table["table_name"]:
     
 shape_df = pd.DataFrame(shapes).sort_values("table_name")
 shape_df
-# -
 
+# +
+table = execute(
+    """SELECT table_name FROM information_schema.tables 
+    WHERE table_schema like '%omop%'
+    --AND (table_name like '%stb%' OR table_name like '%int%')
+    """
+)
+table
+
+shapes = []
+for t in table["table_name"]:
+    nrows = execute(f'SELECT COUNT(*) AS nrows FROM "main_omop"."{t}"').iloc[0]["nrows"]
+    ncols = execute(f"""
+        SELECT COUNT(*) AS ncols
+        FROM information_schema.columns
+        WHERE table_schema = 'main_omop'
+          AND table_name = '{t}'
+    """).iloc[0]["ncols"]
+    shapes.append({"table_name": t, "nrows": nrows, "ncols": ncols})
+
+    
+shape_df = pd.DataFrame(shapes).sort_values("table_name")
+shape_df
+
+
+# +
+table = execute(
+"""
+SELECT *
+FROM main_main.emerge_consort_gira_int_cpt_procedures
+where cpt_code = '0144T'
+limit 100
+"""
+)
+
+table
+
+# +
+# table = execute(
+# """
+# SELECT *
+# FROM main_main.emerge_consort_gira_lookup_concepts
+# where concept_code = '0144T'
+# limit 100
+# """
+# )
+
+# table
+
+# table = execute(
+# """
+# SELECT *
+# FROM main_main.emerge_consort_gira_lookup_standards
+# where src_concept_code = '0144T'
+# limit 100
+# """
+# )
+
+# table
+
+table = execute(
+"""
+SELECT *
+FROM main_main.emerge_consort_gira_int_cpt_none
+--where src_concept_code = '0144T'
+limit 100
+"""
+)
+
+table
+# -
 
 # table = execute(
 #     "PRAGMA table_info('main_main.emerge_consort_gira_int_person_persons')"
