@@ -1,6 +1,6 @@
 {{ config(materialized='table') }}
      
-SELECT
+select
     emerge_id,
     age_at_event,
     measurement_concept_id,
@@ -27,18 +27,19 @@ SELECT
     encounter_id,
     gira_ror,
     src_index,
-FROM {{ ref('emerge_consort_gira_src_emerge_measurement_ex_release_20260127') }} src
-JOIN (SELECT -- JOIN used to drop rows that are not domain 'Measurement'
+from {{ ref('emerge_consort_gira_src_emerge_measurement_ex_release_20260127') }} src
+join (select -- JOIN used to drop rows that are not domain 'Measurement'
       s_concept_id, s_concept_code, src_concept_id
-      FROM {{ ref('emerge_consort_gira_lookup_standards') }} 
-      WHERE src_table = 'M'
-      AND domain_id = 'Measurement'
-      ) AS mci
-    ON src.measurement_concept_id = mci.src_concept_id
-LEFT JOIN (SELECT
+      from {{ ref('emerge_consort_gira_lookup_standards') }} 
+      where src_table = 'M'
+      and domain_id = 'Measurement'
+      ) as mci
+    on src.measurement_concept_id = mci.src_concept_id
+left join (select
       s_concept_id, s_concept_code, src_concept_id
-      FROM {{ ref('emerge_consort_gira_lookup_standards') }} 
-      WHERE src_table = 'M'
-      AND domain_id in ('Unit') -- gira_consort specific. From analysis the only vocabulary that joins to unit unit_concept_ids with Standard concepts.
-      ) AS uci
-    ON src.unit_concept_id = uci.src_concept_id
+      from {{ ref('emerge_consort_gira_lookup_standards') }} 
+      where src_table = 'M'
+      and domain_id in ('Unit') -- gira_consort specific. From analysis the only vocabulary that joins to unit unit_concept_ids with Standard concepts.
+      ) as uci
+    on src.unit_concept_id = uci.src_concept_id
+where emerge_id not in (select emerge_id from {{ ref('emerge_consort_gira_lookup_exclusion') }})

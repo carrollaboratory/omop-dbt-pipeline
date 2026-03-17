@@ -4,11 +4,11 @@
 study_id = 'consort_gira'
 study_data_dir = "../_study_data/consort_gira/eMERGE_6_Month_Data_External_Release" # From the repo root dir.
 harmonized_bucket_dir = 'eMERGE_6_Month_Data_External_Release'
-tgt_schema = 'main_main'
+tgt_schema = 'main_omop'
 pipeline_repo = 'omop_dbt_pipeline'
 
 # The prefix of the harmonized data in the pipeline. ex 'emerge_consort_gira_stb_observation' --> 'emerge_consort_gira_stb_'
-export_prefix = 'emerge_consort_gira_stb_' 
+# export_prefix = 'emerge_consort_gira_stb_' 
 
 # A list of target/export pipeline table names. ex 'emerge_consort_gira_stb_observation' --> 'observation'
 # The notebook will write the data to csvs with these names. ex 'emerge_consort_gira_stb_observation' --> 'observation.csv'
@@ -38,7 +38,7 @@ if os.environ.get("WORKSPACE_BUCKET"):
 else:
     bucket = "bucket_placeholder"
     
-engine = duckdb.connect("/tmp/dbt.duckdb")
+engine = duckdb.connect("~/dbt.duckdb")
 
 # +
 repo_home_dir = Path.cwd().parent
@@ -92,7 +92,7 @@ def execute(query):
 # # COPY tables from duckdb into pipeline/output_data/{study_id}/{table}.csv
 
 for t in export_tables:
-    input_tablename = f'{tgt_schema}.{export_prefix}{t}'
+    input_tablename = f'{tgt_schema}.{t}'
     output_filename = f'{paths["output_study_dir"]}/{t}.csv'
     
     t = engine.execute(
@@ -114,9 +114,9 @@ for t in export_tables:
 # +
 print(f'gsutil cp -r {output_study_dir}/ {bucket_study_dir}')
 
-#     subprocess.run(
-#         ["gsutil", "cp", "-r", output_study_dir , bucket_study_dir], check=True
-#     )
+subprocess.run(
+    ["gsutil", "cp", "-r", output_study_dir , bucket_study_dir], check=True
+)
 # -
 
 if __name__ == "__main__":

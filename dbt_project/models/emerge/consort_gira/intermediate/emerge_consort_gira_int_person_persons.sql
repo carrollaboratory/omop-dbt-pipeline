@@ -41,6 +41,7 @@ left join (
     where vocabulary_id in ('Gender')
 ) v
     on src.gender_concept_id = v.src_concept_id
+where emerge_id not in (select emerge_id from {{ ref('emerge_consort_gira_lookup_exclusion') }})
 group by
     src.emerge_id,
     src.withdrawal_status,

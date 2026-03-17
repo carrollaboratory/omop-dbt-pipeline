@@ -145,7 +145,16 @@ limit 10
 )
 table
 
+table = execute(
+"""
+select distinct person_id 
+from main_omop.condition_occurrence
+where person_id not in (select distinct person_id from main_omop.person)
 
+
+"""
+)
+table
 
 # +
 # table = execute(
@@ -309,6 +318,101 @@ table
 # yob is used for measurement.measurment_date. TODO: What to do when NULL
 # +
 # are all persons in measurements...etc in person table
+
+table = execute(
+    """
+with dist_persons as (
+select distinct emerge_id from  main_main.emerge_consort_gira_src_emerge_bmi_ex_release_20260128
+
+union
+
+select distinct emerge_id from  main_main.emerge_consort_gira_src_emerge_cpt_ex_release_20260129
+
+union 
+
+select distinct emerge_id from  main_main.emerge_consort_gira_src_emerge_icd_ex_release_20260129
+
+union 
+
+select distinct emerge_id from  main_main.emerge_consort_gira_src_emerge_measurement_ex_release_20260127
+)
+select emerge_id
+from dist_persons
+where emerge_id not in (select distinct emerge_id from main_main.emerge_consort_gira_src_emerge_person_ex_release_20260123)
+    """
+)
+table
+
+# +
+# are all persons in measurements...etc in person table
+
+table = execute(
+    """
+select count( *) 
+from 
+--main_main.emerge_consort_gira_src_emerge_bmi_ex_release_20260128
+--main_main.emerge_consort_gira_src_emerge_cpt_ex_release_20260129
+--main_main.emerge_consort_gira_src_emerge_icd_ex_release_20260129
+main_main.emerge_consort_gira_src_emerge_measurement_ex_release_20260127
+where emerge_id = 3343983
+
+    """
+)
+table
+
+# bmi(252) cpt(111) icd(402) meas(166)
+
+# +
+# are all persons in measurements...etc in person table
+
+table = execute(
+    """
+with dist_persons as (
+select distinct emerge_id from  main_main.emerge_consort_gira_src_emerge_bmi_ex_release_20260128
+
+union
+
+select distinct emerge_id from  main_main.emerge_consort_gira_src_emerge_cpt_ex_release_20260129
+
+union 
+
+select distinct emerge_id from  main_main.emerge_consort_gira_src_emerge_icd_ex_release_20260129
+
+union 
+
+select distinct emerge_id from  main_main.emerge_consort_gira_src_emerge_measurement_ex_release_20260127
+)
+select count(emerge_id) as "n_persons_in_person_tbl_only", dbgap_site_name, withdrawal_status
+from main_main.emerge_consort_gira_src_emerge_person_ex_release_20260123
+left join main.care_site_seed
+on substring(emerge_id, 1,2) = dbgap_site_id
+where emerge_id not in (select emerge_id from dist_persons)
+group by dbgap_site_name, withdrawal_status
+
+    """
+)
+table
+
+# +
+# are all persons in measurements...etc in person table
+
+table = execute(
+    """
+
+
+
+select *
+from 
+--main_main.emerge_consort_gira_src_emerge_bmi_ex_release_20260128
+--main_main.emerge_consort_gira_src_emerge_cpt_ex_release_20260129
+--main_main.emerge_consort_gira_src_emerge_icd_ex_release_20260129
+--main_main.emerge_consort_gira_src_emerge_measurement_ex_release_20260127
+main_main.emerge_consort_gira_src_emerge_person_ex_release_20260123
+where emerge_id = 3343983
+
+    """
+)
+table
 # -
 
 # # BMI

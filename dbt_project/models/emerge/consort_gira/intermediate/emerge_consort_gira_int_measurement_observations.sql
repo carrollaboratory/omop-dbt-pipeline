@@ -42,3 +42,4 @@ LEFT JOIN (SELECT
       AND domain_id != 'Measurement'
       ) AS uci
     ON src.unit_concept_id = uci.src_concept_id
+where emerge_id not in (select emerge_id from {{ ref('emerge_consort_gira_lookup_exclusion') }})

@@ -53,18 +53,14 @@
     src_table,
     jcr.vocabulary_id,
     jcr.domain_id,
-    coalesce(base_concept.s_concept_id, '0') as "s_concept_id",
-    coalesce(base_concept.s_concept_code, '0') as "s_concept_code",
+    coalesce(base_concept.concept_id, '0') as "s_concept_id",
+    coalesce(base_concept.concept_code, '0') as "s_concept_code",
     base_concept.vocabulary_id as 's_vocabulary_id'
     from ranked_jcr as jcr
     left join (select
                vocabulary_id,
                concept_id,
-               concept_code,
-               case when cast(valid_end_date as string) = '20991231' then concept_id
-                    else '0' end as "s_concept_id",
-               case when cast(valid_end_date as string) = '20991231' then concept_code
-                    else null end as "s_concept_code"
+               concept_code
                from {{ ref('CONCEPT') }}
                ) as base_concept
     on jcr.concept_id_2 = base_concept.concept_id
