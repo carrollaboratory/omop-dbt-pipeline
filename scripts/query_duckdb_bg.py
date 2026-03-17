@@ -85,14 +85,67 @@ shape_df
 # +
 table = execute(
 """
-SELECT *
-FROM main_main.emerge_consort_gira_int_cpt_procedures
-where cpt_code = '0144T'
-limit 100
+SELECT distinct condition_concept_id,c.concept_code as 'cond_code', c.concept_name as "cond_name", gender_concept_id, g.concept_name as "gender_concept_name"
+FROM main_omop.condition_occurrence
+left JOIN main_omop.person
+using (person_id)
+left join (select concept_id, concept_name, concept_code from main_omop.CONCEPT where domain_id = 'Condition') c
+on condition_concept_id = c.concept_id
+left join (select concept_id, concept_name from main_omop.CONCEPT where domain_id = 'Gender') g
+on gender_concept_id = g.concept_id
+where condition_concept_id in ('201617','198198','197237','198197','197039','4150042','440971','201257','200052','199078')
+order by c.concept_name
 """
 )
 
 table
+
+# +
+table = execute(
+"""
+
+select distinct icd_code, icd_id, s_condition_concept_id, vocabulary_id as "s_vocab_id", c.concept_name as "cond_name", g.concept_name as "src_gender", g.concept_id as "src_c_gender", p.gender_concept_id as "omop_gender"
+from main_main.emerge_consort_gira_int_icd_conditions
+left JOIN main_main.emerge_consort_gira_src_emerge_person_ex_release_20260123
+using (emerge_id)
+left join (select concept_id, concept_name, concept_code, vocabulary_id from main_omop.CONCEPT where domain_id = 'Condition') c
+on s_condition_concept_id = c.concept_id
+left join (select concept_id, concept_name from main_omop.CONCEPT where domain_id = 'Gender') g
+on gender_concept_id = g.concept_id
+left join (select person_id, gender_concept_id from main_omop.person) p
+on emerge_id = person_id
+where s_condition_concept_id in ('201617','198198','197237','198197','197039','4150042','440971','201257','200052','199078')
+order by icd_code, g.concept_name
+limit 50
+
+
+"""
+)
+
+table
+# -
+
+# table = execute(
+# """
+# select distinct gender_concept_id, s_gender_concept_id, concept_name from main_main.emerge_consort_gira_int_person_persons p
+# left join (select concept_id, concept_name from main_omop.CONCEPT where domain_id = 'Gender') g
+# on gender_concept_id = g.concept_id
+# """
+# )
+# table
+table = execute(
+"""
+select condition_occurrence_id, count(condition_occurrence_id) from main_omop.condition_occurrence
+group by condition_occurrence_id
+having count(condition_occurrence_id) > 1
+limit 10
+
+
+"""
+)
+table
+
+
 
 # +
 # table = execute(
