@@ -90,7 +90,7 @@
 # dbt run --select cohort_definition
 
 
-# # dbt run --select cdm_source
+dbt run --select cdm_source
 # # dbt run --select concept
 # # dbt run --select vocabulary
 # # dbt run --select domain

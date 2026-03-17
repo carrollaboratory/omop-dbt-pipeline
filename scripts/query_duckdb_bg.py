@@ -147,10 +147,8 @@ table
 
 table = execute(
 """
-select distinct person_id 
-from main_omop.condition_occurrence
-where person_id not in (select distinct person_id from main_omop.person)
-
+--SELECT * FROM main_omop.CONCEPT WHERE vocabulary_id = 'CDM' AND concept_class_id = 'CDM'
+SELECT vocabulary_version from main_omop.vocabulary  where vocabulary_id = 'None'
 
 """
 )
