@@ -21,6 +21,7 @@ add_index as (
   
 select *,
     {{ generate_key('combined', 'consort_gira', 'visit_index') }}::integer as "visit_occurrence_id",
+    substring(emerge_id, 1, 2) as src_care_site
 from add_index
 left join (select emerge_id, birth_date from {{ ref('emerge_consort_gira_int_person_persons') }} )
 using (emerge_id)
