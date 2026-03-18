@@ -99,6 +99,9 @@ order by c.concept_name
 )
 
 table
+# -
+
+
 
 # +
 table = execute(
@@ -145,11 +148,71 @@ limit 10
 )
 table
 
+# +
+# table = execute(
+# """
+# SELECT * FROM main_omop.drug_exposure
+# WHERE drug_concept_id = 0
+# limit 100
+# """
+# )
+# 
+# table
+
+# table = execute(
+# """
+# SELECT * FROM main_omop.measurement
+# WHERE measurement_date is null
+# limit 100
+# """
+# )
+# table
+
+# table = execute(
+# """
+#     select
+#     vo.birth_date,
+#     meas.age_at_event,
+#     date_add(vo.birth_date, INTERVAL (vo.age_at_event) YEAR)::date as "measurement_date"
+
+#     from main_main.emerge_consort_gira_int_measurement_measurements as meas
+#     left join main_main.emerge_consort_gira_int_visit_occurrences as vo
+#     using (emerge_id, encounter_id)
+#     where measurement_date is null
+# """
+# )
+# table
+
 table = execute(
 """
---SELECT * FROM main_omop.CONCEPT WHERE vocabulary_id = 'CDM' AND concept_class_id = 'CDM'
-SELECT vocabulary_version from main_omop.vocabulary  where vocabulary_id = 'None'
+with dist_persons as (
+select emerge_id , 'b' as "table" from  main_main.emerge_consort_gira_src_emerge_bmi_ex_release_20260128 where age_at_event is null
 
+union
+
+select emerge_id , 'c' as "table" from  main_main.emerge_consort_gira_src_emerge_cpt_ex_release_20260129 where age_at_event is null
+
+union 
+
+select emerge_id, 'i' as "table"  from  main_main.emerge_consort_gira_src_emerge_icd_ex_release_20260129 where age_at_event is null
+
+union 
+
+select emerge_id, 'm' as "table"  from  main_main.emerge_consort_gira_src_emerge_measurement_ex_release_20260127 where age_at_event is null
+)
+    
+select * from dist_persons
+
+"""
+)
+table
+# -
+
+table = execute(
+"""
+SELECT * FROM main_omop.visit_occurrence
+WHERE visit_end_date is null
+limit 100
 """
 )
 table
@@ -590,6 +653,21 @@ table
 #  TODO Add tests to a 'src_data/concept_info' model(int?) to assert domains are expected as well as vocabularies.
 #  EX: If the src measurement table is refreshed and now has a few procedures, or rows that don't join to the vocab at all.
 # -
+# Added , null_padding=true to the models that read in the vocab tables. See this row was missing the last three values for some reason. 
+# Patched in the pipeline. Should figure out what is going on with the download.
+table = execute(
+    """
+    SELECT 
+    *
+    FROM main_omop.concept c
+    where concept_name ilike '%pregabalin 25mg/1 / 50mg/1 / 75mg/1 / 100mg/1 / 150mg/1 / 200mg/1 / 225mg/1 / 300mg/1%'
+    and valid_end_date is null
+    
+     """
+)
+table
+
+
 # # Other
 
 

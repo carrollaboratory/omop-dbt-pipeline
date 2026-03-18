@@ -20,3 +20,4 @@
           ) AS mci
         ON src.cpt_code = mci.src_concept_code
     where emerge_id not in (select emerge_id from {{ ref('emerge_consort_gira_lookup_exclusion') }})
+    and age_at_event is not null --todo

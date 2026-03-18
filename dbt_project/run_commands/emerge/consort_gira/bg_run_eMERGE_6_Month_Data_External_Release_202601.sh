@@ -4,10 +4,10 @@
 #  the presence of the tables from `dbt_project/seeds/*` in the db.
 
 
-# dbt clean
-# dbt deps || { echo "Error: dbt deps failed. Exiting..."; exit 1; }
+dbt clean
+dbt deps || { echo "Error: dbt deps failed. Exiting..."; exit 1; }
 
-# dbt seed #--full-refresh
+dbt seed #--full-refresh
 
 # +
 # Source tables
@@ -50,7 +50,7 @@
 # dbt run --select emerge_consort_gira_int_icd_procedures
 # dbt run --select emerge_consort_gira_int_icd_conditions
 
-# dbt run --select emerge_consort_gira_int_person_persons  #Corrects race/ethnicity cols and ensures concept_ids are Standard.
+dbt run --select emerge_consort_gira_int_person_persons  #Corrects race/ethnicity cols and ensures concept_ids are Standard.
 
 # dbt run --select emerge_consort_gira_int_care_sites
 # dbt run --select emerge_consort_gira_int_visit_occurrences
@@ -58,7 +58,7 @@
 
 # +
 # Stb tables
-# dbt run --select person
+dbt run --select person
 # dbt run --select measurement
 # dbt run --select observation
 # dbt run --select drug_exposure
@@ -70,7 +70,8 @@
 
 
 # dbt run --select observation_period
-# dbt run --select visit_detail
+# dbt run --select visit_detailcd ~
+
 # dbt run --select death
 # dbt run --select note
 # dbt run --select note_nlp
@@ -90,7 +91,7 @@
 # dbt run --select cohort_definition
 
 
-dbt run --select cdm_source
+# dbt run --select cdm_source
 # # dbt run --select concept
 # # dbt run --select vocabulary
 # # dbt run --select domain
