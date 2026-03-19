@@ -35,6 +35,79 @@ def execute(query):
 
 # +
 table = execute(
+    """
+    SELECT 
+    distinct drug_concept_id, drug_source_concept_id, domain_id , count(drug_source_concept_id) as "n_records"
+    FROM main_omop.drug_exposure
+    left join main_omop.CONCEPT 
+    on drug_concept_id = concept_id
+    where domain_id != 'Drug'
+    group by drug_concept_id, drug_source_concept_id, domain_id 
+limit 100
+    """
+)
+print(table.shape)
+print(table['n_records'].sum())
+table
+
+# https://athena.ohdsi.org/search-terms/terms?query=759727
+
+# +
+table = execute(
+    """
+    SELECT 
+    distinct measurement_concept_id, measurement_source_concept_id, measurement_source_value, domain_id , count(measurement_source_concept_id) as "n_records"
+    FROM main_omop.measurement
+    left join main_omop.CONCEPT 
+    on measurement_concept_id = concept_id
+    where domain_id != 'Measurement'
+    group by measurement_concept_id, measurement_source_concept_id, measurement_source_value, domain_id 
+limit 100
+    """
+)
+print(table.shape)
+print(table['n_records'].sum())
+
+table
+
+# +
+table = execute(
+    """
+    SELECT 
+    distinct condition_concept_id, condition_source_concept_id, condition_source_value, domain_id , count(condition_source_concept_id) as "n_records"
+    FROM main_omop.condition_occurrence
+    left join main_omop.CONCEPT 
+    on condition_concept_id = concept_id
+    where domain_id != 'Condition'
+    group by condition_concept_id, condition_source_concept_id, condition_source_value, domain_id 
+
+    """
+)
+print(table.shape)
+print(table['n_records'].sum())
+
+table
+
+# +
+table = execute(
+    """
+    SELECT 
+    distinct procedure_concept_id, procedure_source_concept_id, procedure_source_value, domain_id, count(procedure_source_concept_id) as "n_records"
+    FROM main_omop.procedure_occurrence
+    left join main_omop.CONCEPT 
+    on procedure_concept_id = concept_id
+    where domain_id != 'Procedure'
+    group by procedure_concept_id, procedure_source_concept_id, procedure_source_value, domain_id
+limit 100
+    """
+)
+print(table.shape)
+print(table['n_records'].sum())
+
+table
+
+# +
+table = execute(
     """SELECT table_name FROM information_schema.tables 
     WHERE table_schema like 'main_main'
     --AND (table_name like '%stb%' OR table_name like '%int%')

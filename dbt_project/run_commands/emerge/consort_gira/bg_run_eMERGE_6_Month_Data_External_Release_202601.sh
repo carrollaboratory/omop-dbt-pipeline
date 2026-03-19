@@ -60,15 +60,15 @@
 
 # +
 # Stb tables
-dbt run --select person
-dbt run --select measurement
-dbt run --select observation
-dbt run --select drug_exposure
-dbt run --select visit_occurrence
-dbt run --select condition_occurrence
-dbt run --select care_site
+# dbt run --select person
+# dbt run --select measurement
+# dbt run --select observation
+# dbt run --select drug_exposure
+# dbt run --select visit_occurrence
+# dbt run --select condition_occurrence
+# dbt run --select care_site
 dbt run --select procedure_occurrence
-dbt run --select device_exposure
+# dbt run --select device_exposure
 
 
 # dbt run --select observation_period

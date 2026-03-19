@@ -42,7 +42,7 @@
     vo.visit_occurrence_id::integer as "visit_occurrence_id",
     null::integer as "visit_detail_id",
     null::text as "procedure_source_value",
-    cpt_id::text as "procedure_source_concept_id",
+    cpt_id::integer as "procedure_source_concept_id",
     null::text as "modifier_source_value",
     cpt.row_id::text as "x_row_id",
     encounter_id::integer as "x_encounter_id",
