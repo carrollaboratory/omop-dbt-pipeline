@@ -17,6 +17,7 @@
           FROM {{ ref('emerge_consort_gira_lookup_standards') }} 
           WHERE src_table = 'CPT'
           AND domain_id = 'Device'
+          AND relationship_id = 'Maps to'
           ) AS mci
         ON src.cpt_code = mci.src_concept_code
     where emerge_id not in (select emerge_id from {{ ref('emerge_consort_gira_lookup_exclusion') }})

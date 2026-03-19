@@ -15,6 +15,7 @@ with cleaned_race_ethnicity as (
             s_concept_id, src_concept_id, s_concept_code, domain_id
         from {{ ref('emerge_consort_gira_lookup_standards') }}
         where vocabulary_id in ('Race', 'Ethnicity')
+        AND relationship_id = 'Maps to'
     ) v
     on p.concept_value = v.src_concept_id
     where concept_value is not null
@@ -39,6 +40,7 @@ left join (
     select s_concept_id, src_concept_id
     from {{ ref('emerge_consort_gira_lookup_standards') }}
     where vocabulary_id in ('Gender')
+    AND relationship_id = 'Maps to'
 ) v
     on src.gender_concept_id = v.src_concept_id
 where src.emerge_id not in (select emerge_id from {{ ref('emerge_consort_gira_lookup_exclusion') }})

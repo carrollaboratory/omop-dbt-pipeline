@@ -9,7 +9,7 @@
     32817::integer as "observation_type_concept_id",
     value_as_number::float as "value_as_number",
     value_as_text::text as "value_as_string",
-    null::text as "value_as_concept_id",
+    value_as_concept_id::text as "value_as_concept_id",
     null::integer as "qualifier_concept_id",
     s_unit_concept_id::integer as "unit_concept_id",
     null::integer as "provider_id",
@@ -40,7 +40,7 @@
     32817::integer as "observation_type_concept_id", -- Code for EHR is consistent type
     null::float as "value_as_number",
     null::text as "value_as_string",
-    null::text as "value_as_concept_id",
+    value_as_concept_id::text as "value_as_concept_id",
     null::integer as "qualifier_concept_id",
     null::integer as "unit_concept_id",
     null::integer as "provider_id",
@@ -71,7 +71,7 @@
     32817::integer as "observation_type_concept_id", -- required but unknown in the data
     null::float as "value_as_number",
     null::text as "value_as_string",
-    null::text as "value_as_concept_id",
+    value_as_concept_id::text as "value_as_concept_id",
     null::integer as "qualifier_concept_id",
     null::integer as "unit_concept_id",
     null::integer as "provider_id",

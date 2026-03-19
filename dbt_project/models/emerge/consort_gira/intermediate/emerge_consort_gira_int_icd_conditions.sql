@@ -18,6 +18,7 @@ FROM {{ ref('emerge_consort_gira_src_emerge_icd_ex_release_20260129') }} src
           FROM {{ ref('emerge_consort_gira_lookup_standards') }} 
           WHERE src_table = 'ICD'
           AND domain_id = 'Condition'
+          AND relationship_id = 'Maps to'
           ) AS mci
         ON src.icd_code = mci.src_concept_code
     where emerge_id not in (select emerge_id from {{ ref('emerge_consort_gira_lookup_exclusion') }})
