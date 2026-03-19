@@ -5,45 +5,26 @@
     
     filtered_concept as (
         select 
-        distinct concept_id_1 as src_concept_id, 
-        concept_code_1 as src_concept_code,
+        distinct c.concept_id_1 as src_concept_id, 
+        c.concept_code_1 as src_concept_code,
         src_table,
-        vocabulary_id,
-        domain_id
+        relationship_id,
+        concept_id_2 as 's_concept_id'
         from {{ ref ('emerge_consort_gira_lookup_concepts') }} c
+        left join (select *,
+            from {{ ref('CONCEPT_RELATIONSHIP') }} cr
+            where relationship_id in ('Maps to', 'Maps to value'))
         where (concept_id_1 != '4245997' or concept_id_1 is null) -- add the bmi concept standard manually.
-    ),
-    
-    ranked_relationships as (
-        select *,
-        row_number() over (partition by concept_id_1 order by concept_id_2) as rn
-        from {{ ref('CONCEPT_RELATIONSHIP') }}
-        where relationship_id = 'Maps to'
-        ),
-    
-    ranked_jcr as (
-        select
-        distinct src_concept_id,
-        src_concept_code,
-        src_table,
-        vocabulary_id,
-        domain_id,
-        concept_id_2,
-        valid_end_date as "src_valid_end_date"
-        from filtered_concept fc
-        left join ranked_relationships cr
-        on fc.src_concept_id = cr.concept_id_1 and cr.rn = 1 -- TODO analysis: get only the first mapping with the 'Maps to' relationship.
     )
     
     select    
     '4245997' as "src_concept_id", 
     'Body mass index' as "src_concept_code",
     'BMI' as "src_table",
-    'SNOMED' as "vocabulary_id",
-    'Measurement' as "domain_id",
     '3038553' as "s_concept_id",
     'Body mass index (BMI) [Ratio]' as "s_concept_code",
-    'LOINC' as 's_vocabulary_id'
+    'Maps to' as "relationship_id"
+    'Measurement' as "s_domain_id"
     
     union 
     
@@ -51,18 +32,17 @@
     distinct src_concept_id, 
     src_concept_code,
     src_table,
-    jcr.vocabulary_id,
-    jcr.domain_id,
     coalesce(base_concept.concept_id, '0') as "s_concept_id",
     coalesce(base_concept.concept_code, '0') as "s_concept_code",
-    base_concept.vocabulary_id as 's_vocabulary_id'
-    from ranked_jcr as jcr
+    relationship_id
+    domain_id as "s_domain_id"
+    from filtered_concept fc
     left join (select
-               vocabulary_id,
                concept_id,
-               concept_code
+               concept_code,
+               domain_id
                from {{ ref('CONCEPT') }}
-               ) as base_concept
-    on jcr.concept_id_2 = base_concept.concept_id
+               ) as c
+    on fc.concept_id_2 = c.concept_id
 
     

@@ -105,6 +105,18 @@ print(table.shape)
 print(table['n_records'].sum())
 
 table
+# -
+
+table = execute("""
+    select distinct concept.*, concept_relationship.*
+    from main_omop.concept 
+    join main_omop.concept_relationship on(concept_id=concept_id_1) 
+    join main_omop.observation on (concept_id=observation_source_concept_id) 
+    where relationship_id='Maps to value'
+    limit 100
+      """
+)
+table  
 
 # +
 table = execute(
