@@ -44,13 +44,13 @@
 # dbt run --select emerge_consort_gira_int_measurement_measurements
 # dbt run --select emerge_consort_gira_int_measurement_observations
 
-# dbt run --select emerge_consort_gira_int_cpt_measurements
+dbt run --select emerge_consort_gira_int_cpt_measurements
 # dbt run --select emerge_consort_gira_int_cpt_observations
 # dbt run --select emerge_consort_gira_int_cpt_procedures
 # dbt run --select emerge_consort_gira_int_cpt_drugs
 # dbt run --select emerge_consort_gira_int_cpt_devices
 
-# dbt run --select emerge_consort_gira_int_icd_measurements
+dbt run --select emerge_consort_gira_int_icd_measurements
 # dbt run --select emerge_consort_gira_int_icd_observations
 # dbt run --select emerge_consort_gira_int_icd_procedures
 # dbt run --select emerge_consort_gira_int_icd_conditions
@@ -61,13 +61,13 @@
 # +
 # Stb tables
 # dbt run --select person
-# dbt run --select measurement
+dbt run --select measurement
 # dbt run --select observation
 # dbt run --select drug_exposure
 # dbt run --select visit_occurrence
 # dbt run --select condition_occurrence
 # dbt run --select care_site
-dbt run --select procedure_occurrence
+# dbt run --select procedure_occurrence
 # dbt run --select device_exposure
 
 
