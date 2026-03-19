@@ -27,6 +27,7 @@ select
     vas.value_as_concept_code,
     row_id,
     encounter_id,
+    gira_ror,
     src_index,
 from {{ ref('emerge_consort_gira_src_emerge_measurement_ex_release_20260127') }} src
 join (select -- JOIN used to drop rows that are not domain 'Measurement'

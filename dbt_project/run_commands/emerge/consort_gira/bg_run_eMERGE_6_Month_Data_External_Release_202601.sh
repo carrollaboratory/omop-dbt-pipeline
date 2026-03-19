@@ -25,11 +25,11 @@
 # dbt run --select RELATIONSHIP
 # dbt run --select VOCABULARY
 # dbt run --select DRUG_STRENGTH
+# -
 
 
-# +
 # dbt run --select emerge_consort_gira_lookup_concepts
-# dbt run --select emerge_consort_gira_lookup_standards
+dbt run --select emerge_consort_gira_lookup_standards
 # dbt run --select emerge_consort_gira_lookup_exclusion
 
 # +
@@ -72,8 +72,7 @@ dbt run --select observation
 
 
 # dbt run --select observation_period
-# dbt run --select visit_detailcd ~
-
+# dbt run --select visit_detail
 # dbt run --select death
 # dbt run --select note
 # dbt run --select note_nlp

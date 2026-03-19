@@ -108,12 +108,44 @@ table
 # -
 
 table = execute("""
-    select distinct concept.*, concept_relationship.*
+    select concept_id, count(relationship_id)
     from main_omop.concept 
     join main_omop.concept_relationship on(concept_id=concept_id_1) 
-    join main_omop.observation on (concept_id=observation_source_concept_id) 
-    where relationship_id='Maps to value'
+    join (select distinct observation_source_concept_id from main_omop.observation) o on (concept_id=observation_source_concept_id) 
+        group by concept_id, relationship_id
+    
+    having count(relationship_id) > 1 and  relationship_id='Maps to value'
+
     limit 100
+      """
+)
+table  
+
+table = execute("""
+    SELECT 
+    o.observation_source_concept_id,
+    count(distinct r1.concept_id_2) * count(distinct r2.concept_id_2) AS potential_rows
+    from (select distinct observation_source_concept_id from main_omop.observation) o
+    join main_omop.concept_relationship r1 
+        on o.observation_source_concept_id = r1.concept_id_1 
+        and r1.relationship_id = 'Maps to'
+    join main_omop.concept_relationship r2 
+        on o.observation_source_concept_id = r2.concept_id_1 
+        and r2.relationship_id = 'Maps to value'
+    group by o.observation_source_concept_id
+    order by count(distinct r1.concept_id_2) * count(distinct r2.concept_id_2) desc
+    limit 100
+      """
+)
+table 
+
+table = execute("""
+    select cr.*
+    from main_omop.concept 
+    join main_omop.concept_relationship cr on(concept_id=concept_id_1) 
+    join (select distinct observation_source_concept_id from main_omop.observation) on (concept_id=observation_source_concept_id) 
+    where relationship_id='Maps to value'
+    and concept_id = 45537686
       """
 )
 table  

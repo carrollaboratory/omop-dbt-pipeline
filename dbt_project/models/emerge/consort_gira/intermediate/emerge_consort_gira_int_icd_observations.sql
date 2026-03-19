@@ -24,7 +24,7 @@ FROM {{ ref('emerge_consort_gira_src_emerge_icd_ex_release_20260129') }} src
           ) AS mci
         ON src.icd_code = mci.src_concept_code
      left join (select -- JOIN used to drop rows that are not domain 'Measurement'
-      src_concept_id, s_concept_id as "value_as_concept_id" , s_concept_code as "value_as_concept_code"
+      src_concept_code, s_concept_id as "value_as_concept_id" , s_concept_code as "value_as_concept_code"
       from {{ ref('emerge_consort_gira_lookup_standards') }} 
       where src_table = 'ICD'
       and relationship_id = 'Maps to value'
