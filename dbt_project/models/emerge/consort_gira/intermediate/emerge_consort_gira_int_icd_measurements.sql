@@ -11,8 +11,9 @@ vas.value_as_concept_id,
 vas.value_as_concept_code,
 icd_flag,
 row_id,
+encounter_id,
 gira_ror,
-src_index,
+src_index
 from {{ ref('emerge_consort_gira_src_emerge_icd_ex_release_20260129') }} src
 join (select -- JOIN used to drop rows that are not domain 'Measurement'
     s_concept_id, s_concept_code, src_concept_id, src_concept_code, domain_id

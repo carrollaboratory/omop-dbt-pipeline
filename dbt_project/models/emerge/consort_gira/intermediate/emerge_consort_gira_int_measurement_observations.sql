@@ -23,6 +23,8 @@ SELECT
     unit_concept_as_text,
     uci.s_concept_id as "s_unit_concept_id",
     uci.s_concept_code as "s_unit_concept_code",
+    vas.value_as_concept_id,
+    vas.value_as_concept_code,
     row_id,
     encounter_id,
     gira_ror,
@@ -33,6 +35,7 @@ JOIN (SELECT -- JOIN used to drop rows that are not domain 'Observation'
       FROM {{ ref('emerge_consort_gira_lookup_standards') }} 
       WHERE src_table = 'M'
       AND domain_id = 'Observation'
+      and relationship_id = 'Maps to value'
       ) AS mci
     ON src.measurement_concept_id = mci.src_concept_id
 LEFT JOIN (SELECT
@@ -42,5 +45,12 @@ LEFT JOIN (SELECT
       AND domain_id != 'Measurement'
       ) AS uci
     ON src.unit_concept_id = uci.src_concept_id
+left join (select -- JOIN used to drop rows that are not domain 'Measurement'
+      src_concept_id, s_concept_id as "value_as_concept_id" , s_concept_code as "value_as_concept_code"
+      from {{ ref('emerge_consort_gira_lookup_standards') }} 
+      where src_table = 'M'
+      and relationship_id = 'Maps to value'
+      ) as vas
+      on src.measurement_concept_id = vas.src_concept_id
 where emerge_id not in (select emerge_id from {{ ref('emerge_consort_gira_lookup_exclusion') }})
 and domain_id is not null
