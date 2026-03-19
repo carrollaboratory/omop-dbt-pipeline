@@ -15,7 +15,7 @@
     vo.visit_occurrence_id::integer as "visit_occurrence_id",
     null::integer as "visit_detail_id",
     icd_code::text as "procedure_source_value",
-    icd_id::text as "procedure_source_concept_id",
+    icd_id::integer as "procedure_source_concept_id",
     null::text as "modifier_source_value",
     icd.row_id::text as "x_row_id",
     encounter_id::integer as "x_encounter_id",

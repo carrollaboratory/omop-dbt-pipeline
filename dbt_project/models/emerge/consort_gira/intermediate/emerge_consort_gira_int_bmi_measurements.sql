@@ -20,7 +20,7 @@ select
     src_index,
 from {{ ref('emerge_consort_gira_src_emerge_bmi_ex_release_20260128') }} src
 join (select -- JOIN used to drop rows that are not domain 'Measurement'
-      s_concept_id, s_concept_code, src_concept_id
+      s_concept_id, s_concept_code, src_concept_id, domain_id
       from {{ ref('emerge_consort_gira_lookup_standards') }} 
       where src_table = 'BMI'
       and domain_id = 'Measurement'
@@ -34,3 +34,4 @@ left join (select
       ) as uci
     on src.unit_concept_id = uci.src_concept_id
 where emerge_id not in (select emerge_id from {{ ref('emerge_consort_gira_lookup_exclusion') }})
+and domain_id is not null

@@ -4,10 +4,10 @@
 #  the presence of the tables from `dbt_project/seeds/*` in the db.
 
 
-dbt clean
-dbt deps || { echo "Error: dbt deps failed. Exiting..."; exit 1; }
+# dbt clean
+# dbt deps || { echo "Error: dbt deps failed. Exiting..."; exit 1; }
 
-dbt seed #--full-refresh
+# dbt seed #--full-refresh
 
 # +
 # Source tables
@@ -34,6 +34,11 @@ dbt seed #--full-refresh
 
 # +
 # Intermediate tables
+# dbt run --select emerge_consort_gira_int_person_persons  #Corrects race/ethnicity cols and ensures concept_ids are Standard.
+
+# dbt run --select emerge_consort_gira_int_care_sites
+# dbt run --select emerge_consort_gira_int_visit_occurrences
+
 # dbt run --select emerge_consort_gira_int_bmi_measurements
 
 # dbt run --select emerge_consort_gira_int_measurement_measurements
@@ -50,23 +55,20 @@ dbt seed #--full-refresh
 # dbt run --select emerge_consort_gira_int_icd_procedures
 # dbt run --select emerge_consort_gira_int_icd_conditions
 
-dbt run --select emerge_consort_gira_int_person_persons  #Corrects race/ethnicity cols and ensures concept_ids are Standard.
 
-# dbt run --select emerge_consort_gira_int_care_sites
-# dbt run --select emerge_consort_gira_int_visit_occurrences
 
 
 # +
 # Stb tables
 dbt run --select person
-# dbt run --select measurement
-# dbt run --select observation
-# dbt run --select drug_exposure
-# dbt run --select visit_occurrence
-# dbt run --select condition_occurrence
-# dbt run --select care_site
-# dbt run --select procedure_occurrence
-# dbt run --select device_exposure
+dbt run --select measurement
+dbt run --select observation
+dbt run --select drug_exposure
+dbt run --select visit_occurrence
+dbt run --select condition_occurrence
+dbt run --select care_site
+dbt run --select procedure_occurrence
+dbt run --select device_exposure
 
 
 # dbt run --select observation_period

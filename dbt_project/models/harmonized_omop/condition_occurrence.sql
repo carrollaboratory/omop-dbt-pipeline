@@ -14,7 +14,7 @@
     visit_occurrence_id::integer as "visit_occurrence_id",
     null::integer as "visit_detail_id",
     icd_code::text as "condition_source_value", -- Either the code from the source or the code joined to the id given in the source
-    icd_id::text as "condition_source_concept_id", -- Either the id from the source or the id that joined to the code
+    icd_id::integer as "condition_source_concept_id", -- Either the id from the source or the id that joined to the code
     null::text as "condition_status_source_value",
     meas.row_id::integer as "x_row_id",
     encounter_id::integer as "x_encounter_id",

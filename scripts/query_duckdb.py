@@ -19,7 +19,7 @@ if os.environ.get("WORKSPACE_BUCKET"):
 else:
     bucket = "bucket_placeholder"
 
-engine = duckdb.connect("/tmp/dbt.duckdb")
+engine = duckdb.connect("~/dbt.duckdb")
 
 
 def execute(query):
@@ -355,7 +355,46 @@ table
 # 1	Observable Entity	88721.0	0.0	88721.0	SNOMED	Measurement	Observable Entity
 
 # -
-
+table = execute(
+    """
+    select
+    emerge_id,
+    age_at_event,
+    measurement_concept_id,
+    measurement_concept_name,
+    mci.s_concept_id as "s_measurement_concept_id", 
+    mci.s_concept_code as "s_measurement_concept_code",
+    value_as_number,
+    unit_concept_id,
+    unit_concept_name,
+    uci.s_concept_id as "s_unit_concept_id",
+    uci.s_concept_code as "s_unit_concept_code",
+    bmi_z_score,
+    row_id,
+    encounter_id,
+    gira_ror,
+    src_index,
+from main_main.emerge_consort_gira_src_emerge_bmi_ex_release_20260128 src
+join (select -- JOIN used to drop rows that are not domain 'Measurement'
+      s_concept_id, s_concept_code, src_concept_id, domain_id
+      from main_main.emerge_consort_gira_lookup_standards
+      where src_table = 'BMI'
+      and domain_id = 'Measurement'
+      ) as mci
+    on src.measurement_concept_id = mci.src_concept_id
+left join (select
+      s_concept_id, s_concept_code, src_concept_id
+      from main_main.emerge_consort_gira_lookup_standards
+      where src_table = 'BMI'
+      and domain_id != 'Measurement'
+      ) as uci
+    on src.unit_concept_id = uci.src_concept_id
+where emerge_id not in (select emerge_id from main_main.emerge_consort_gira_lookup_exclusion)
+and domain_id is not null
+limit 100
+    """
+)
+table
 
 
 # # CPT
@@ -374,7 +413,7 @@ table = execute(
                vocabulary_id as cc_vocabulary_id,
                domain_id as cc_domain_id,
                concept_class_id as cc_concept_class_id
-               FROM main_main.emerge_consort_gira_lookup_concept 
+               FROM main_main.emerge_consort_gira_lookup_concepts 
                ) AS cc
         ON cpt_src.cpt_code = cc.cc_concept_code
     ),
@@ -398,7 +437,7 @@ SELECT
     cc_vocabulary_id,
     SUM(has_join) AS rows_with_concept_match,
     SUM(CASE WHEN has_join = 0 THEN 1 ELSE 0 END) AS rows_without_concept_match,
-    SUM(CASE WHEN cc_standard_concept = 'S' THEN 1 ELSE 0 END) AS rows_with_standard_concept,
+    SUM(CASE WHEN cc_standard_concept = 'S' THEN 1 ELSE 0 END) AS are_standard_concept,
     STRING_AGG(DISTINCT cc_vocabulary_id, ', ') AS vocabulary_ids,
     STRING_AGG(DISTINCT cc_domain_id, ', ') AS domain_ids,
     STRING_AGG(DISTINCT cc_concept_class_id, ', ') AS concept_class_ids
@@ -577,6 +616,102 @@ table = execute(
 )
 table
 
+table = execute(
+    """
+    
+    with 
+    
+    filtered_concept as (
+        select 
+        distinct concept_id_1 as src_concept_id, 
+        concept_code_1 as src_concept_code,
+        src_table,
+        vocabulary_id,
+        domain_id
+        from main_main.emerge_consort_gira_lookup_concepts c
+        where (concept_id_1 != '4245997' or concept_id_1 is null) -- add the bmi concept standard manually.
+        and domain_id = 'Drug'
+    ),
+    
+    ranked_relationships as (
+        select *,
+        row_number() over (partition by concept_id_1 order by concept_id_2) as rn
+        from main_omop.CONCEPT_RELATIONSHIP
+        where relationship_id = 'Maps to'
+        ),
+    
+    ranked_jcr as (
+        select
+        distinct src_concept_id,
+        src_concept_code,
+        src_table,
+        vocabulary_id,
+        domain_id,
+        concept_id_2,
+        valid_end_date as "src_valid_end_date"
+        from filtered_concept fc
+        left join ranked_relationships cr
+        on fc.src_concept_id = cr.concept_id_1 and cr.rn = 1 -- TODO analysis: get only the first mapping with the 'Maps to' relationship.
+    )
+    
+    select    
+    '4245997' as "src_concept_id", 
+    'Body mass index' as "src_concept_code",
+    'BMI' as "src_table",
+    'SNOMED' as "vocabulary_id",
+    'Measurement' as "domain_id",
+    '3038553' as "s_concept_id",
+    'Body mass index (BMI) [Ratio]' as "s_concept_code",
+    'LOINC' as 's_vocabulary_id'
+    
+    union 
+    
+    select
+    distinct src_concept_id, 
+    src_concept_code,
+    src_table,
+    jcr.vocabulary_id,
+    jcr.domain_id,
+    coalesce(base_concept.concept_id, '0') as "s_concept_id",
+    coalesce(base_concept.concept_code, '0') as "s_concept_code",
+    base_concept.vocabulary_id as 's_vocabulary_id'
+    from ranked_jcr as jcr
+    left join (select
+               vocabulary_id,
+               concept_id,
+               concept_code
+               from main_omop.CONCEPT
+               ) as base_concept
+    on jcr.concept_id_2 = base_concept.concept_id
 
+    
+    """
+)
+table
 
+table = execute(
+    """
+    SELECT person_id FROM main_omop.procedure_occurrence EXCEPT SELECT person_id FROM main_omop.person
+    
+    
+    """
+)
+table
 
+table = execute(
+    """
+    SELECT * FROM main_omop.visit_occurrence where visit_start_date is null
+    
+    
+    """
+)
+table
+
+table = execute(
+    """
+    SELECT * FROM main_main.emerge_consort_gira_int_visit_occurrences 
+    where age_at_event is null
+    
+    """
+)
+table
