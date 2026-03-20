@@ -1,7 +1,7 @@
 {{ config(materialized='table', schema = 'omop') }}
 
+with base as (
     select
-    {{ generate_key('bmi', 'consort_gira', 'src_index') }}::integer as "measurement_id",
     emerge_id::integer as "person_id",
     s_measurement_concept_id::integer as "measurement_concept_id",
     date_add(vo.birth_date, INTERVAL (vo.age_at_event) YEAR)::date as "measurement_date",
@@ -35,7 +35,6 @@
     union all
     
     select
-    {{ generate_key('cpt', 'consort_gira', 'src_index') }}::integer as "measurement_id",
     emerge_id::integer as "person_id",
     s_measurement_concept_id::integer as "measurement_concept_id",
     date_add(vo.birth_date, INTERVAL (vo.age_at_event) YEAR)::date as "measurement_date",
@@ -69,7 +68,6 @@
     union all
     
     select
-    {{ generate_key('icd', 'consort_gira', 'src_index') }}::integer as "measurement_id",
     emerge_id::integer as "person_id",
     s_measurement_concept_id::integer as "measurement_concept_id",
     date_add(vo.birth_date, INTERVAL (vo.age_at_event) YEAR)::date as "measurement_date",
@@ -103,7 +101,6 @@
     union all
     
     select
-    {{ generate_key('measurement', 'consort_gira', 'src_index') }}::integer as "measurement_id",
     emerge_id::integer as "person_id",
     s_measurement_concept_id::integer as "measurement_concept_id",
     date_add(vo.birth_date, INTERVAL (vo.age_at_event) YEAR)::date as "measurement_date",
@@ -122,7 +119,7 @@
     null::text as "measurement_source_value",
     measurement_concept_id::integer as "measurement_source_concept_id",
     unit_concept_as_text::text as "unit_source_value",
-    null::integer as "unit_source_concept_id",
+    unit_concept_id::integer as "unit_source_concept_id",
     null::text as "value_source_value",
     null::integer as "measurement_event_id",
     null::integer as "meas_event_field_concept_id",
@@ -133,3 +130,9 @@
     from {{ ref('emerge_consort_gira_int_measurement_measurements') }} as meas
     left join {{ ref('emerge_consort_gira_int_visit_occurrences') }} as vo
     using (emerge_id, encounter_id)
+    
+    )
+    select
+        CAST(2000000 AS INTEGER) + ROW_NUMBER() OVER ()::integer as "measurement_id",
+        base.*
+    from base

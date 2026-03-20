@@ -1,6 +1,7 @@
 {{ config(materialized='table', schema = 'omop') }}
+
+with base as (
     select
-    {{ generate_key('icd', 'consort_gira', 'src_index') }}::integer as "condition_occurrence_id",
     emerge_id::integer as "person_id",
     s_condition_concept_id::integer as "condition_concept_id",
     date_add(vo.birth_date, INTERVAL (vo.age_at_event) YEAR)::date as "condition_start_date",
@@ -22,3 +23,10 @@
     from {{ ref('emerge_consort_gira_int_icd_conditions') }} as meas
     left join {{ ref('emerge_consort_gira_int_visit_occurrences') }} as vo
     using (emerge_id, encounter_id)
+    
+    )
+    
+    select
+    CAST(2000000 AS INTEGER) + ROW_NUMBER() OVER ()::integer as "condition_occurrence_id",
+    base.*
+    from base

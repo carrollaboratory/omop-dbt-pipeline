@@ -19,7 +19,7 @@ SELECT
       else null -- TODO What to do when not a float. Example: >=40 Not sure why characterization report didn't pick this up
     end as range_high,
     range_flag,
-    unit_concept_id,
+    uci.src_concept_id as "unit_concept_id",
     unit_concept_as_text,
     uci.s_concept_id as "s_unit_concept_id",
     uci.s_concept_code as "s_unit_concept_code",

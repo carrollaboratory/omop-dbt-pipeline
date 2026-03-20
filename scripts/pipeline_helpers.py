@@ -3,7 +3,7 @@
 # ASSIGN THESE VARIABLES
 study_id = 'consort_gira'
 study_data_dir = "../_study_data/consort_gira/eMERGE_6_Month_Data_External_Release" # From the repo root dir.
-harmonized_bucket_dir = 'eMERGE_6_Month_Data_External_Release'
+harmonized_bucket_dir = 'eMERGE_6_Month_Data_External_Release_202603'
 tgt_schema = 'main_omop'
 pipeline_repo = 'omop_dbt_pipeline'
 

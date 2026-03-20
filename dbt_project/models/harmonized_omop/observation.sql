@@ -1,7 +1,6 @@
 {{ config(materialized='table', schema = 'omop') }}
-
+with base as (
     select distinct
-    {{ generate_key('measurement', 'consort_gira', 'src_index') }}::integer as "observation_id",
     emerge_id::integer as "person_id",
     s_observation_concept_id::integer as "observation_concept_id", -- concept_id from joined table
     date_add(vo.birth_date, INTERVAL (vo.age_at_event) YEAR)::date as "observation_date", 
@@ -32,7 +31,6 @@
     union all
     
     select  distinct
-    {{ generate_key('cpt', 'consort_gira', 'src_index') }}::integer as "observation_id",
     emerge_id::integer as "person_id",
     s_observation_concept_id::integer as "observation_concept_id", -- concept_id from joined table
     date_add(vo.birth_date, INTERVAL (vo.age_at_event) YEAR)::date as "observation_date",
@@ -63,7 +61,6 @@
     union all
     
     select distinct
-    {{ generate_key('icd', 'consort_gira', 'src_index') }}::integer as "observation_id",
     emerge_id::integer as "person_id",
     s_observation_concept_id::integer as "observation_concept_id", -- concept_id from joined table
     date_add(vo.birth_date, INTERVAL (vo.age_at_event) YEAR)::date as "observation_date", 
@@ -90,3 +87,9 @@
     from {{ ref('emerge_consort_gira_int_icd_observations') }} as icd
     left join {{ ref('emerge_consort_gira_int_visit_occurrences') }} as vo
     using (emerge_id, encounter_id)
+    
+    )
+    select 
+    CAST(2000000 AS INTEGER) + ROW_NUMBER() OVER ()::integer as  "observation_id",
+    base.*
+    from base

@@ -55,6 +55,31 @@ table
 # +
 table = execute(
     """
+    SELECT count(*), 'o' as "Table" from main_omop.observation
+    union all 
+    SELECT count(*), 'm' as "Table" from main_omop.measurement
+    union all 
+    SELECT count(*), 'c' as "Table" from main_omop.condition_occurrence   
+    union all 
+    SELECT count(*), 'p' as "Table" from main_omop.procedure_occurrence    
+    union all 
+    SELECT count(*), 'v' as "Table" from main_omop.visit_occurrence
+    union all 
+    SELECT count(*), 'p' as "Table" from main_omop.person   
+    union all 
+    SELECT count(*), 'v' as "Table" from main_omop.drug_exposure
+    union all 
+    SELECT count(*), 'v' as "Table" from main_omop.device_exposure    
+    """
+)
+print(table.shape)
+table
+
+# https://athena.ohdsi.org/search-terms/terms?query=759727
+
+# +
+table = execute(
+    """
     SELECT 
     distinct measurement_concept_id, measurement_source_concept_id, measurement_source_value, domain_id , count(measurement_source_concept_id) as "n_records"
     FROM main_omop.measurement
@@ -105,6 +130,64 @@ print(table.shape)
 print(table['n_records'].sum())
 
 table
+
+# +
+table = execute(
+    """
+    SELECT 
+    distinct unit_concept_id, unit_source_concept_id,concept_id
+    FROM main_omop.measurement
+left join (select * from main_omop.CONCEPT where domain_id = 'Unit')
+on unit_source_concept_id = concept_id
+    where concept_id is not null
+    limit 100
+    """
+)
+print(table.shape)
+table
+
+# https://athena.ohdsi.org/search-terms/terms?query=759727
+# -
+
+table = execute(
+    """
+    select *
+    from ( select * from main_main.emerge_consort_gira_src_emerge_bmi_ex_release_20260128 limit 500) src
+join (select -- JOIN used to drop rows that are not domain 'Measurement'
+      s_concept_id, s_concept_code, src_concept_id, domain_id
+      from main_main.emerge_consort_gira_lookup_standards 
+      where src_table = 'BMI'
+      and domain_id = 'Measurement'
+      and relationship_id = 'Maps to'
+      ) as mci
+    on src.measurement_concept_id = mci.src_concept_id
+left join (select
+      s_concept_id, s_concept_code, src_concept_id, src_concept_code
+      from main_main.emerge_consort_gira_lookup_standards
+      where src_table = 'BMI'
+      and relationship_id = 'Maps to'
+      ) as uci 
+      on src.unit_concept_id = uci.src_concept_id
+    
+        """
+)
+print(table.shape)
+table
+
+# +
+table = execute(
+    """
+    SELECT 
+    distinct *
+    FROM main_omop.measurement
+    where value_as_concept_id is not null
+    limit 100
+    """
+)
+print(table.shape)
+table
+
+# https://athena.ohdsi.org/search-terms/terms?query=759727
 # -
 
 table = execute("""
@@ -216,8 +299,18 @@ order by c.concept_name
 )
 
 table
-# -
+# +
+table = execute(
+"""
+SELECT distinct gender_concept_id , concept_name
+from
+main_main.emerge_consort_gira_int_person_persons
+left join main_omop.CONCEPT on gender_concept_id = concept_id
 
+"""
+)
+
+table
 
 
 # +

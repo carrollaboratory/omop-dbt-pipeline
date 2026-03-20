@@ -1,6 +1,8 @@
 {{ config(materialized='table', schema = 'omop') }}
+
+with base as (
+
 select
-    {{ generate_key('cpt', 'consort_gira', 'src_index') }}::integer as "device_exposure_id",
     emerge_id::integer as "person_id",
     s_device_concept_id::integer as "device_concept_id",
     date_add(vo.birth_date, INTERVAL (vo.age_at_event) YEAR)::date as "device_exposure_start_date",
@@ -26,3 +28,8 @@ select
     left join {{ ref('emerge_consort_gira_int_visit_occurrences') }} as vo
     using (emerge_id, encounter_id)
     
+)
+select
+CAST(2000000 AS INTEGER) + ROW_NUMBER() OVER ()::integer as "device_exposure_id",
+base.*
+from base

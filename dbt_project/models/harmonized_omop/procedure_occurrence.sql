@@ -1,7 +1,6 @@
 {{ config(materialized='table', schema = 'omop') }}
-
+with base as (
     select
-    {{ generate_key('icd', 'consort_gira', 'src_index') }}::integer as "procedure_occurrence_id",
     emerge_id::integer as "person_id",
     s_procedure_concept_id::integer as "procedure_concept_id",
     date_add(vo.birth_date, INTERVAL (vo.age_at_event) YEAR)::date as "procedure_date",
@@ -28,7 +27,6 @@
     union all
     
     select
-    {{ generate_key('cpt', 'consort_gira', 'src_index') }}::integer as "procedure_occurrence_id",
     emerge_id::integer as "person_id",
     s_procedure_concept_id::integer as "procedure_concept_id",
     date_add(vo.birth_date, INTERVAL (vo.age_at_event) YEAR)::date as "procedure_date",
@@ -50,3 +48,8 @@
     from {{ ref('emerge_consort_gira_int_cpt_procedures') }} as cpt
     left join {{ ref('emerge_consort_gira_int_visit_occurrences') }} as vo
     using (emerge_id, encounter_id)
+)
+
+select CAST(2000000 AS INTEGER) + ROW_NUMBER() OVER ()::integer as "procedure_occurrence_id",
+base.*
+from base

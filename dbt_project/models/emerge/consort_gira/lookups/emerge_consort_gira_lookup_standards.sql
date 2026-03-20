@@ -21,10 +21,10 @@
     
     select    
     '4245997' as "src_concept_id", 
-    'Body mass index' as "src_concept_code",
+    '60621009' as "src_concept_code",
     'BMI' as "src_table",
     '3038553' as "s_concept_id",
-    'Body mass index (BMI) [Ratio]' as "s_concept_code",
+    '39156-5' as "s_concept_code",
     'Maps to' as "relationship_id",
     'SNOMED' as "vocabulary_id",
     'Measurement' as "domain_id"

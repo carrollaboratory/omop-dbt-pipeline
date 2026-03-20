@@ -9,8 +9,8 @@ select
     mci.s_concept_id as "s_measurement_concept_id", 
     mci.s_concept_code as "s_measurement_concept_code",
     value_as_number,
-    unit_concept_id,
-    unit_concept_name,
+    uci.src_concept_id as "unit_concept_id",
+    uci.src_concept_code as "unit_concept_name",
     uci.s_concept_id as "s_unit_concept_id",
     uci.s_concept_code as "s_unit_concept_code",
     vas.value_as_concept_id,
@@ -19,7 +19,7 @@ select
     row_id,
     encounter_id,
     gira_ror,
-    src_index,
+    src_index
 from {{ ref('emerge_consort_gira_src_emerge_bmi_ex_release_20260128') }} src
 join (select -- JOIN used to drop rows that are not domain 'Measurement'
       s_concept_id, s_concept_code, src_concept_id, domain_id
@@ -30,7 +30,7 @@ join (select -- JOIN used to drop rows that are not domain 'Measurement'
       ) as mci
     on src.measurement_concept_id = mci.src_concept_id
 left join (select
-      s_concept_id, s_concept_code, src_concept_id
+      s_concept_id, s_concept_code, src_concept_id, src_concept_code
       from {{ ref('emerge_consort_gira_lookup_standards') }} 
       where src_table = 'BMI'
       and relationship_id = 'Maps to'

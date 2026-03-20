@@ -1,8 +1,7 @@
 {{ config(materialized='table', schema = 'omop') }}
 
+with base as (
     select
-    {{ generate_key('cpt', 'consort_gira', 'src_index') }}::integer as "drug_exposure_id",
-    src_index, -- Included to create the primary_key
     emerge_id::integer as "person_id",
     s_drug_concept_id::integer as "drug_concept_id",
     date_add(vo.birth_date, INTERVAL (vo.age_at_event) YEAR)::date as "drug_exposure_start_date",
@@ -31,3 +30,8 @@
     from {{ ref('emerge_consort_gira_int_cpt_drugs') }} as cpt
     left join {{ ref('emerge_consort_gira_int_visit_occurrences') }} as vo
     using (emerge_id, encounter_id)
+)
+select
+CAST(2000000 AS INTEGER) + ROW_NUMBER() OVER ()::integer as "drug_exposure_id",
+base.*
+from base
