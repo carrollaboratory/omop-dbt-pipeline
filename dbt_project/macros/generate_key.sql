@@ -6,6 +6,7 @@
         '3' if src_tbl == 'cpt' else
         '4' if src_tbl == 'icd' else
         '5' if src_tbl == 'person' else
+        '6' if src_tbl == 'combined' else
         '999' -%}
 
     {%- set key_buffer = 200000000 if study_id == 'consort_gira' else 100000000 -%}

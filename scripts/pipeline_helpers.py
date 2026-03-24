@@ -3,11 +3,12 @@
 # ASSIGN THESE VARIABLES
 study_id = 'consort_gira'
 study_data_dir = "../_study_data/consort_gira/eMERGE_6_Month_Data_External_Release" # From the repo root dir.
-tgt_schema = 'main_main'
+harmonized_bucket_dir = 'eMERGE_6_Month_Data_External_Release_202603'
+tgt_schema = 'main_omop'
 pipeline_repo = 'omop_dbt_pipeline'
 
 # The prefix of the harmonized data in the pipeline. ex 'emerge_consort_gira_stb_observation' --> 'emerge_consort_gira_stb_'
-export_prefix = 'emerge_consort_gira_stb_' 
+# export_prefix = 'emerge_consort_gira_stb_' 
 
 # A list of target/export pipeline table names. ex 'emerge_consort_gira_stb_observation' --> 'observation'
 # The notebook will write the data to csvs with these names. ex 'emerge_consort_gira_stb_observation' --> 'observation.csv'
@@ -18,8 +19,9 @@ export_tables = ['care_site',
                  'observation',
                  'person',
                  'procedure_occurrence',
-                 'visit_occurrence'
+                 'visit_occurrence',
                  'measurement']
+
 # -
 
 from pathlib import Path
@@ -36,20 +38,19 @@ if os.environ.get("WORKSPACE_BUCKET"):
 else:
     bucket = "bucket_placeholder"
     
-engine = duckdb.connect("/tmp/dbt.duckdb")
+engine = duckdb.connect("~/dbt.duckdb")
 
 # +
-repo_home_dir = repo_home_dir
-output_study_dir =  repo_home_dir.parent / f"output_data/{study_id}"
-csv_output_dir = f'{output_dir / study_id}'
-bucket_study_dir = f'{bucket}/harmonized/{study_id}'
+repo_home_dir = Path.cwd().parent
+output_study_dir = repo_home_dir / f"../output_data/{study_id}"
+study_data_dir = repo_home_dir / study_data_dir
+bucket_study_dir = f'{bucket}/harmonized/{harmonized_bucket_dir}'
 
 paths = {
     "repo_home_dir": repo_home_dir,
-    "output_study_dir": output_dir,
+    "output_study_dir": output_study_dir,
     "src_data_dir": study_data_dir,
-    "csv_output_dir": csv_output_dir,
-    "bucket_study_dir": bucket_study_dir,
+    "bucket_study_dir": f'{bucket_study_dir}',
 }
 
 
@@ -91,8 +92,7 @@ def execute(query):
 # # COPY tables from duckdb into pipeline/output_data/{study_id}/{table}.csv
 
 for t in export_tables:
-    name = Path(t).stem.replace(export_prefix, "")
-    input_tablename = f'{tgt_schema}.{export_prefix}{t}'
+    input_tablename = f'{tgt_schema}.{t}'
     output_filename = f'{paths["output_study_dir"]}/{t}.csv'
     
     t = engine.execute(
@@ -100,12 +100,24 @@ for t in export_tables:
     ).fetchall()
     print(f'Printing {input_tablename} to {output_filename}.')
 
+# for t in export_tables:
+#     input_tablename = f'{tgt_schema}.{export_prefix}{t}'
+#     output_filename = f'{paths["output_study_dir"]}/{t}.parquet'
+#     
+#     t = engine.execute(
+#         f"COPY (SELECT * FROM {input_tablename}) TO '{output_filename}' (FORMAT PARQUET)"
+#     ).fetchall()
+#     print(f'Printing {input_tablename} to {output_filename}.')
+
 # # COPY tables from pipeline/output_data/{study_id} into the workspace bucket
 
-for t in export_tables:
-    subprocess.run(
-        ["gsutil", "cp", "-r", csv_output_dir , bucket_dir], check=True
-    )
+# +
+print(f'gsutil cp -r {output_study_dir}/ {bucket_study_dir}')
+
+subprocess.run(
+    ["gsutil", "cp", "-r", output_study_dir , bucket_study_dir], check=True
+)
+# -
 
 if __name__ == "__main__":
     main()

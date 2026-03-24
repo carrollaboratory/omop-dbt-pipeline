@@ -94,9 +94,10 @@ code_m_units_concepts as (
     'M' as src_table
     FROM {{ ref('emerge_consort_gira_src_emerge_measurement_ex_release_20260127') }}
     WHERE unit_concept_id is null and unit_concept_as_text is not null
-)
+),
 
 
+unioned as (
 SELECT * 
 FROM id_join_concepts 
 LEFT JOIN {{ ref('CONCEPT') }} AS concept
@@ -133,5 +134,21 @@ FROM code_m_units_concepts
 LEFT JOIN {{ ref('CONCEPT') }} AS concept
 ON code_m_units_concepts.concept_code = concept.concept_code 
 AND domain_id = 'Unit'
+),
 
+deduplicated AS ( -- Retain only one record per concept_code when the concept is found in multiple vocabularies.
+    SELECT 
+        *,
+        ROW_NUMBER() OVER (
+            PARTITION BY 
+                -- Partition by both concept_code and concept_id to ensure unique results
+                COALESCE(concept_code, CAST(concept_id AS STRING))
+            ORDER BY src_table -- Secondary sorting logic to break ties
+        ) AS row_number
+    FROM unioned
+)
+
+SELECT *
+FROM deduplicated
+WHERE row_number = 1
 
