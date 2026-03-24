@@ -15,5 +15,4 @@
     null::text as "term_exists",
     null::text as "term_temporal",
     null::text as "term_modifiers"
-    -- from {{ ref('emerge_consort_gira_src_emerge_person_ex_release_20260123') }}
     

@@ -8,5 +8,4 @@
     null::integer as "value_as_concept_id",
     null::text as "metadata_date",
     null::timestamp as "metadata_datetime"
-    -- from {{ ref('emerge_consort_gira_src_emerge_person_ex_release_20260123') }}
     

@@ -8,5 +8,4 @@
     null::float as "dose_value",
     null::text as "dose_era_start_date",
     null::text as "dose_era_end_date"
-    -- from {{ ref('emerge_consort_gira_src_emerge_person_ex_release_20260123') }}
     

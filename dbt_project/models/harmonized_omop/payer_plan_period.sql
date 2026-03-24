@@ -18,5 +18,4 @@
     null::integer as "stop_reason_concept_id",
     null::text as "stop_reason_source_value",
     null::integer as "stop_reason_source_concept_id"
-    -- from {{ ref('emerge_consort_gira_src_emerge_person_ex_release_20260123') }}
     

@@ -13,5 +13,4 @@
     null::text as "country_source_value",
     null::float as "latitude",
     null::float as "longitude"
-    -- from {{ ref('emerge_consort_gira_src_emerge_person_ex_release_20260123') }}
     

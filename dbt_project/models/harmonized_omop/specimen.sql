@@ -16,5 +16,4 @@
     null::text as "unit_source_value",
     null::text as "anatomic_site_source_value",
     null::text as "disease_status_source_value"
-    -- from {{ ref('emerge_consort_gira_src_emerge_person_ex_release_20260123') }}
     

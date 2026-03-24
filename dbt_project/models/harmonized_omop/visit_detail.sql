@@ -20,5 +20,4 @@
     null::integer as "preceding_visit_detail_id",
     null::integer as "parent_visit_detail_id",
     null::integer as "visit_occurrence_id"
-    -- from {{ ref('emerge_consort_gira_src_emerge_person_ex_release_20260123') }}
     

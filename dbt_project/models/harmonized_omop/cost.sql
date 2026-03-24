@@ -23,5 +23,4 @@
     null::text as "revenue_code_source_value",
     null::integer as "drg_concept_id",
     null::text as "drg_source_value"
-    -- from {{ ref('emerge_consort_gira_src_emerge_person_ex_release_20260123') }}
     

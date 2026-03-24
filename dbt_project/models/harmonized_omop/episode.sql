@@ -14,5 +14,4 @@
     null::integer as "episode_type_concept_id",
     null::text as "episode_source_value",
     null::integer as "episode_source_concept_id"
-    -- from {{ ref('emerge_consort_gira_src_emerge_person_ex_release_20260123') }}
     

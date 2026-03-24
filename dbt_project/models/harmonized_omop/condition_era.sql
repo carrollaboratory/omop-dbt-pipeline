@@ -7,5 +7,4 @@
     null::text as "condition_era_start_date",
     null::text as "condition_era_end_date",
     null::integer as "condition_occurrence_count"
-    -- from {{ ref('emerge_consort_gira_src_emerge_person_ex_release_20260123') }}
-    
+  

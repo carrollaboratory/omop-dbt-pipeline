@@ -17,5 +17,4 @@
     null::text as "note_source_value",
     null::integer as "note_event_id",
     null::integer as "note_event_field_concept_id"
-    -- from {{ ref('emerge_consort_gira_src_emerge_person_ex_release_20260123') }}
     

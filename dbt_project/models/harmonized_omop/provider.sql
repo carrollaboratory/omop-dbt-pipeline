@@ -14,5 +14,4 @@
     null::integer as "specialty_source_concept_id",
     null::text as "gender_source_value",
     null::integer as "gender_source_concept_id"
-    -- from {{ ref('emerge_consort_gira_src_emerge_person_ex_release_20260123') }}
     
