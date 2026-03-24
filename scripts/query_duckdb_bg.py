@@ -33,24 +33,60 @@ def execute(query):
         return pd.DataFrame(result.fetchall(), columns=[col[0] for col in result.description])
 
 
+# table = execute(
+#     "PRAGMA table_info('main_main.emerge_consort_gira_int_person_persons')"
+# )
+#
+# table
+
 # +
 table = execute(
-    """
-    SELECT 
-    distinct drug_concept_id, drug_source_concept_id, domain_id , count(drug_source_concept_id) as "n_records"
-    FROM main_omop.drug_exposure
-    left join main_omop.CONCEPT 
-    on drug_concept_id = concept_id
-    where domain_id != 'Drug'
-    group by drug_concept_id, drug_source_concept_id, domain_id 
-limit 100
+    """SELECT table_name FROM information_schema.tables 
+    WHERE table_schema like '%omop%'
+    --AND (table_name like '%stb%' OR table_name like '%int%')
     """
 )
-print(table.shape)
-print(table['n_records'].sum())
 table
 
-# https://athena.ohdsi.org/search-terms/terms?query=759727
+shapes = []
+for t in table["table_name"]:
+    nrows = execute(f'SELECT COUNT(*) AS nrows FROM "main_omop"."{t}"').iloc[0]["nrows"]
+    ncols = execute(f"""
+        SELECT COUNT(*) AS ncols
+        FROM information_schema.columns
+        WHERE table_schema = 'main_omop'
+          AND table_name = '{t}'
+    """).iloc[0]["ncols"]
+    shapes.append({"table_name": t, "nrows": nrows, "ncols": ncols})
+
+    
+shape_df = pd.DataFrame(shapes).sort_values("table_name")
+shape_df
+
+
+# +
+table = execute(
+    """SELECT table_name FROM information_schema.tables 
+    WHERE table_schema like 'main_main'
+    --AND (table_name like '%stb%' OR table_name like '%int%')
+    """
+)
+table
+
+shapes = []
+for t in table["table_name"]:
+    nrows = execute(f'SELECT COUNT(*) AS nrows FROM "main_main"."{t}"').iloc[0]["nrows"]
+    ncols = execute(f"""
+        SELECT COUNT(*) AS ncols
+        FROM information_schema.columns
+        WHERE table_schema = 'main_main'
+          AND table_name = '{t}'
+    """).iloc[0]["ncols"]
+    shapes.append({"table_name": t, "nrows": nrows, "ncols": ncols})
+
+    
+shape_df = pd.DataFrame(shapes).sort_values("table_name")
+shape_df
 
 # +
 table = execute(
@@ -70,77 +106,6 @@ table = execute(
     SELECT count(*), 'v' as "Table" from main_omop.drug_exposure
     union all 
     SELECT count(*), 'v' as "Table" from main_omop.device_exposure    
-    """
-)
-print(table.shape)
-table
-
-# https://athena.ohdsi.org/search-terms/terms?query=759727
-
-# +
-table = execute(
-    """
-    SELECT 
-    distinct measurement_concept_id, measurement_source_concept_id, measurement_source_value, domain_id , count(measurement_source_concept_id) as "n_records"
-    FROM main_omop.measurement
-    left join main_omop.CONCEPT 
-    on measurement_concept_id = concept_id
-    where domain_id != 'Measurement'
-    group by measurement_concept_id, measurement_source_concept_id, measurement_source_value, domain_id 
-limit 100
-    """
-)
-print(table.shape)
-print(table['n_records'].sum())
-
-table
-
-# +
-table = execute(
-    """
-    SELECT 
-    distinct condition_concept_id, condition_source_concept_id, condition_source_value, domain_id , count(condition_source_concept_id) as "n_records"
-    FROM main_omop.condition_occurrence
-    left join main_omop.CONCEPT 
-    on condition_concept_id = concept_id
-    where domain_id != 'Condition'
-    group by condition_concept_id, condition_source_concept_id, condition_source_value, domain_id 
-
-    """
-)
-print(table.shape)
-print(table['n_records'].sum())
-
-table
-
-# +
-table = execute(
-    """
-    SELECT 
-    distinct procedure_concept_id, procedure_source_concept_id, procedure_source_value, domain_id, count(procedure_source_concept_id) as "n_records"
-    FROM main_omop.procedure_occurrence
-    left join main_omop.CONCEPT 
-    on procedure_concept_id = concept_id
-    where domain_id != 'Procedure'
-    group by procedure_concept_id, procedure_source_concept_id, procedure_source_value, domain_id
-limit 100
-    """
-)
-print(table.shape)
-print(table['n_records'].sum())
-
-table
-
-# +
-table = execute(
-    """
-    SELECT 
-    distinct unit_concept_id, unit_source_concept_id,concept_id
-    FROM main_omop.measurement
-left join (select * from main_omop.CONCEPT where domain_id = 'Unit')
-on unit_source_concept_id = concept_id
-    where concept_id is not null
-    limit 100
     """
 )
 print(table.shape)
@@ -175,20 +140,7 @@ print(table.shape)
 table
 
 # +
-table = execute(
-    """
-    SELECT 
-    distinct *
-    FROM main_omop.measurement
-    where value_as_concept_id is not null
-    limit 100
-    """
-)
-print(table.shape)
-table
-
-# https://athena.ohdsi.org/search-terms/terms?query=759727
-# -
+# Make sure that joining a concept to 'Maps to value' as well as 'Maps to' will not cause an unexpectantly large number of new rows.
 
 table = execute("""
     select concept_id, count(relationship_id)
@@ -203,6 +155,7 @@ table = execute("""
       """
 )
 table  
+# -
 
 table = execute("""
     SELECT 
@@ -221,66 +174,6 @@ table = execute("""
       """
 )
 table 
-
-table = execute("""
-    select cr.*
-    from main_omop.concept 
-    join main_omop.concept_relationship cr on(concept_id=concept_id_1) 
-    join (select distinct observation_source_concept_id from main_omop.observation) on (concept_id=observation_source_concept_id) 
-    where relationship_id='Maps to value'
-    and concept_id = 45537686
-      """
-)
-table  
-
-# +
-table = execute(
-    """SELECT table_name FROM information_schema.tables 
-    WHERE table_schema like 'main_main'
-    --AND (table_name like '%stb%' OR table_name like '%int%')
-    """
-)
-table
-
-shapes = []
-for t in table["table_name"]:
-    nrows = execute(f'SELECT COUNT(*) AS nrows FROM "main_main"."{t}"').iloc[0]["nrows"]
-    ncols = execute(f"""
-        SELECT COUNT(*) AS ncols
-        FROM information_schema.columns
-        WHERE table_schema = 'main_main'
-          AND table_name = '{t}'
-    """).iloc[0]["ncols"]
-    shapes.append({"table_name": t, "nrows": nrows, "ncols": ncols})
-
-    
-shape_df = pd.DataFrame(shapes).sort_values("table_name")
-shape_df
-
-# +
-table = execute(
-    """SELECT table_name FROM information_schema.tables 
-    WHERE table_schema like '%omop%'
-    --AND (table_name like '%stb%' OR table_name like '%int%')
-    """
-)
-table
-
-shapes = []
-for t in table["table_name"]:
-    nrows = execute(f'SELECT COUNT(*) AS nrows FROM "main_omop"."{t}"').iloc[0]["nrows"]
-    ncols = execute(f"""
-        SELECT COUNT(*) AS ncols
-        FROM information_schema.columns
-        WHERE table_schema = 'main_omop'
-          AND table_name = '{t}'
-    """).iloc[0]["ncols"]
-    shapes.append({"table_name": t, "nrows": nrows, "ncols": ncols})
-
-    
-shape_df = pd.DataFrame(shapes).sort_values("table_name")
-shape_df
-
 
 # +
 table = execute(
@@ -302,11 +195,14 @@ table
 # +
 table = execute(
 """
-SELECT distinct gender_concept_id , concept_name
+SELECT distinct gender_concept_id , concept_name, care_site_name, count(emerge_id)
 from
 main_main.emerge_consort_gira_int_person_persons
 left join main_omop.CONCEPT on gender_concept_id = concept_id
-
+left join main_omop.care_site on substring(emerge_id, 1,2) = care_site_source_value
+where concept_name is null or concept_name not in ('MALE','FEMALE')
+group by gender_concept_id, concept_name, care_site_name
+order by concept_name
 """
 )
 
@@ -317,7 +213,7 @@ table
 table = execute(
 """
 
-select distinct icd_code, icd_id, s_condition_concept_id, vocabulary_id as "s_vocab_id", c.concept_name as "cond_name", g.concept_name as "src_gender", g.concept_id as "src_c_gender", p.gender_concept_id as "omop_gender"
+select distinct c.concept_id, c.concept_name as "cond_name"
 from main_main.emerge_consort_gira_int_icd_conditions
 left JOIN main_main.emerge_consort_gira_src_emerge_person_ex_release_20260123
 using (emerge_id)
@@ -327,156 +223,90 @@ left join (select concept_id, concept_name from main_omop.CONCEPT where domain_i
 on gender_concept_id = g.concept_id
 left join (select person_id, gender_concept_id from main_omop.person) p
 on emerge_id = person_id
-where s_condition_concept_id in ('201617','198198','197237','198197','197039','4150042','440971','201257','200052','199078')
-order by icd_code, g.concept_name
-limit 50
+where s_condition_concept_id in ('26935','193439','194420','194997','195500','196738','197032','197039','197237','197605','198197','198198','199078','200052','200670','200970','201072','201238','201257','201617','201909','433716','436155','436366','440971','443211','4150042','40482030','45772671')
+order by concept_id
 
 
 """
 )
 
-table
-# -
-
-# table = execute(
-# """
-# select distinct gender_concept_id, s_gender_concept_id, concept_name from main_main.emerge_consort_gira_int_person_persons p
-# left join (select concept_id, concept_name from main_omop.CONCEPT where domain_id = 'Gender') g
-# on gender_concept_id = g.concept_id
-# """
-# )
-# table
-table = execute(
-"""
-select condition_occurrence_id, count(condition_occurrence_id) from main_omop.condition_occurrence
-group by condition_occurrence_id
-having count(condition_occurrence_id) > 1
-limit 10
-
-
-"""
-)
 table
 
 # +
-# table = execute(
-# """
-# SELECT * FROM main_omop.drug_exposure
-# WHERE drug_concept_id = 0
-# limit 100
-# """
-# )
-# 
-# table
+table = execute(
+"""
+select distinct icd_code,
+icd_id,
+s_condition_concept_id as standard_condition_concept_id,
+vocabulary_id as "standard_vocab_id",
+c.concept_name as "standard_cond_name",
+g.concept_name as "src_gender",
+care_site_name
+from main_main.emerge_consort_gira_int_icd_conditions
+left JOIN main_main.emerge_consort_gira_src_emerge_person_ex_release_20260123
+using (emerge_id)
+left join (select concept_id, concept_name, concept_code, vocabulary_id from main_omop.CONCEPT where domain_id = 'Condition') c
+on s_condition_concept_id = c.concept_id
+left join (select concept_id, concept_name from main_omop.CONCEPT where domain_id = 'Gender') g
+on gender_concept_id = g.concept_id
+left join (select person_id, gender_concept_id from main_omop.person) p
+on emerge_id = person_id
+left join main_omop.care_site on substring(emerge_id, 1,2) = care_site_source_value
+where (s_condition_concept_id in ('193439','194420','195500','198198','199078','200052','201238','201257','201909','4150042') and src_gender != 'FEMALE')
+   or (s_condition_concept_id in ('26935','194997','196738','197032','197039','197237','197605','198197','200670','201072','201617','433716','436155','436366','440971','443211','40482030','45772671') and src_gender != 'MALE')
+order by g.concept_name
 
-# table = execute(
-# """
-# SELECT * FROM main_omop.measurement
-# WHERE measurement_date is null
-# limit 100
-# """
-# )
-# table
+"""
+)
+table.to_csv('gender_condition_mismatch.csv')
 
-# table = execute(
-# """
-#     select
-#     vo.birth_date,
-#     meas.age_at_event,
-#     date_add(vo.birth_date, INTERVAL (vo.age_at_event) YEAR)::date as "measurement_date"
+table
 
-#     from main_main.emerge_consort_gira_int_measurement_measurements as meas
-#     left join main_main.emerge_consort_gira_int_visit_occurrences as vo
-#     using (emerge_id, encounter_id)
-#     where measurement_date is null
-# """
-# )
-# table
+# +
 
 table = execute(
 """
 with dist_persons as (
-select emerge_id , 'b' as "table" from  main_main.emerge_consort_gira_src_emerge_bmi_ex_release_20260128 where age_at_event is null
+select emerge_id , 'b' as "table_id" from  main_main.emerge_consort_gira_src_emerge_bmi_ex_release_20260128 where age_at_event is null
 
 union
 
-select emerge_id , 'c' as "table" from  main_main.emerge_consort_gira_src_emerge_cpt_ex_release_20260129 where age_at_event is null
+select emerge_id , 'c' as "table_id" from  main_main.emerge_consort_gira_src_emerge_cpt_ex_release_20260129 where age_at_event is null
 
 union 
 
-select emerge_id, 'i' as "table"  from  main_main.emerge_consort_gira_src_emerge_icd_ex_release_20260129 where age_at_event is null
+select emerge_id, 'i' as "table_id"  from  main_main.emerge_consort_gira_src_emerge_icd_ex_release_20260129 where age_at_event is null
 
 union 
 
-select emerge_id, 'm' as "table"  from  main_main.emerge_consort_gira_src_emerge_measurement_ex_release_20260127 where age_at_event is null
+select emerge_id, 'emerge_measurement_ex_release_20260127' as "table_id"  from  main_main.emerge_consort_gira_src_emerge_measurement_ex_release_20260127 where age_at_event is null
 )
     
-select * from dist_persons
+select 
+table_id, care_site_name, count(emerge_id) as "n_records_missing_age_at_event"
+from dist_persons
+left join main_omop.care_site on substring(emerge_id, 1,2) = care_site_source_value
+group by table_id, care_site_name, care_site_source_value
 
 """
 )
 table
 # -
-
-table = execute(
-"""
-SELECT * FROM main_omop.visit_occurrence
-WHERE visit_end_date is null
-limit 100
-"""
-)
-table
-
-# +
-# table = execute(
-# """
-# SELECT *
-# FROM main_main.emerge_consort_gira_lookup_concepts
-# where concept_code = '0144T'
-# limit 100
-# """
-# )
-
-# table
-
-# table = execute(
-# """
-# SELECT *
-# FROM main_main.emerge_consort_gira_lookup_standards
-# where src_concept_code = '0144T'
-# limit 100
-# """
-# )
-
-# table
-
-table = execute(
-"""
-SELECT *
-FROM main_main.emerge_consort_gira_int_cpt_none
---where src_concept_code = '0144T'
-limit 100
-"""
-)
-
-table
-# -
-
-# table = execute(
-#     "PRAGMA table_info('main_main.emerge_consort_gira_int_person_persons')"
-# )
-#
-# table
 
 # # analysis
 
 table = execute(
     """
     SELECT 
+    care_site_name,
     sum(case when withdrawal_status = 1 then 1 else 0 end) as '1_active',
     sum(case when withdrawal_status = 0 then 1 else 0 end) as '0_withdrawn',
     sum(case when (withdrawal_status not in (1, 0) or withdrawal_status is null) then 1 else 0 end) as 'unexpected_status'
     FROM main_main.emerge_consort_gira_int_person_persons
+    left join main_omop.care_site on substring(emerge_id, 1,2) = care_site_source_value
+    group by care_site_name
+    order by care_site_name
+    
     """
 )
 table
@@ -537,16 +367,16 @@ table
 table = execute(
     """
 
-
     SELECT
-      range_low,
+      range_low, care_site_name,
       COUNT(*) AS row_count
     FROM main_main.emerge_consort_gira_src_emerge_measurement_ex_release_20260127
-    WHERE range_low IS NOT NULL
-    AND TRY_CAST(range_low AS INTEGER) IS NULL
-    GROUP BY range_low
-    ORDER BY row_count DESC, range_low;
+    left join main_omop.care_site on substring(emerge_id, 1,2) = care_site_source_value
 
+    WHERE range_low IS NOT NULL
+    AND TRY_CAST(range_low AS float) IS NULL
+    GROUP BY range_low, care_site_name
+    ORDER BY row_count DESC, range_low;
 
     """
 )
@@ -557,12 +387,13 @@ table = execute(
     """
 
     SELECT
-      range_high,
+      range_high, care_site_name,
       COUNT(*) AS row_count
     FROM main_main.emerge_consort_gira_src_emerge_measurement_ex_release_20260127
+    left join main_omop.care_site on substring(emerge_id, 1,2) = care_site_source_value
     WHERE range_high IS NOT NULL
-    AND TRY_CAST(range_high AS INTEGER) IS NULL
-    GROUP BY range_high
+    AND TRY_CAST(range_high AS float) IS NULL
+    GROUP BY range_high, care_site_name
     ORDER BY row_count DESC, range_high;
 
 
@@ -578,10 +409,12 @@ table = execute(
     """
 
     SELECT 
-    SUM(CASE WHEN year_of_birth is not null then 1 else 0 end) as yob_exists,
-    SUM(CASE WHEN year_of_birth is null then 1 else 0 end) as yob_null
+    count(emerge_id) as n_yob_null,
+    care_site_name
     FROM main_main.emerge_consort_gira_src_emerge_person_ex_release_20260123
-
+    left join main_omop.care_site on substring(emerge_id, 1,2) = care_site_source_value
+    where year_of_birth is null
+    group by care_site_name
     """
 )
 table
@@ -607,31 +440,14 @@ union
 
 select distinct emerge_id from  main_main.emerge_consort_gira_src_emerge_measurement_ex_release_20260127
 )
-select emerge_id
+select count(emerge_id), care_site_name
 from dist_persons
+left join main_omop.care_site on substring(emerge_id, 1,2) = care_site_source_value
 where emerge_id not in (select distinct emerge_id from main_main.emerge_consort_gira_src_emerge_person_ex_release_20260123)
+group by care_site_name
     """
 )
 table
-
-# +
-# are all persons in measurements...etc in person table
-
-table = execute(
-    """
-select count( *) 
-from 
---main_main.emerge_consort_gira_src_emerge_bmi_ex_release_20260128
---main_main.emerge_consort_gira_src_emerge_cpt_ex_release_20260129
---main_main.emerge_consort_gira_src_emerge_icd_ex_release_20260129
-main_main.emerge_consort_gira_src_emerge_measurement_ex_release_20260127
-where emerge_id = 3343983
-
-    """
-)
-table
-
-# bmi(252) cpt(111) icd(402) meas(166)
 
 # +
 # are all persons in measurements...etc in person table
@@ -653,33 +469,13 @@ union
 
 select distinct emerge_id from  main_main.emerge_consort_gira_src_emerge_measurement_ex_release_20260127
 )
-select count(emerge_id) as "n_persons_in_person_tbl_only", dbgap_site_name, withdrawal_status
+select count(emerge_id) as "n_persons_in_person_tbl_only", care_site_name
 from main_main.emerge_consort_gira_src_emerge_person_ex_release_20260123
-left join main.care_site_seed
-on substring(emerge_id, 1,2) = dbgap_site_id
+left join main_omop.care_site on substring(emerge_id, 1,2) = care_site_source_value
 where emerge_id not in (select emerge_id from dist_persons)
-group by dbgap_site_name, withdrawal_status
+group by care_site_name
+order by care_site_name
 
-    """
-)
-table
-
-# +
-# are all persons in measurements...etc in person table
-
-table = execute(
-    """
-
-
-
-select *
-from 
---main_main.emerge_consort_gira_src_emerge_bmi_ex_release_20260128
---main_main.emerge_consort_gira_src_emerge_cpt_ex_release_20260129
---main_main.emerge_consort_gira_src_emerge_icd_ex_release_20260129
---main_main.emerge_consort_gira_src_emerge_measurement_ex_release_20260127
-main_main.emerge_consort_gira_src_emerge_person_ex_release_20260123
-where emerge_id = 3343983
 
     """
 )
@@ -863,31 +659,264 @@ table
 #  TODO Add tests to a 'src_data/concept_info' model(int?) to assert domains are expected as well as vocabularies.
 #  EX: If the src measurement table is refreshed and now has a few procedures, or rows that don't join to the vocab at all.
 # -
-# Added , null_padding=true to the models that read in the vocab tables. See this row was missing the last three values for some reason. 
-# Patched in the pipeline. Should figure out what is going on with the download.
-table = execute(
-    """
-    SELECT 
-    *
-    FROM main_omop.concept c
-    where concept_name ilike '%pregabalin 25mg/1 / 50mg/1 / 75mg/1 / 100mg/1 / 150mg/1 / 200mg/1 / 225mg/1 / 300mg/1%'
-    and valid_end_date is null
-    
-     """
-)
-table
-
-
 # # Other
 
 
 # +
 #  Look into concepts that don't join to standards. breakdown by site_id
+# +
+table = execute(
+    """
+    WITH id_join_concepts as (
+    SELECT substring(emerge_id, 1,2) as site_id, measurement_concept_id AS concept_id,
+    null as concept_code,
+    'M' as src_column,
+    'measurement_concept_id' as field
+    FROM main_main.emerge_consort_gira_src_emerge_measurement_ex_release_20260127
+    WHERE measurement_concept_id IS NOT NULL
+
+    UNION
+
+    SELECT substring(emerge_id, 1,2) as site_id, unit_concept_id AS concept_id,
+    unit_concept_as_text as concept_code,
+    'M' as src_table,
+    'unit_concept_id' as field
+    FROM main_main.emerge_consort_gira_src_emerge_measurement_ex_release_20260127
+    WHERE unit_concept_id IS NOT NULL
+    
+),
+
+code_m_units_concepts as (
+    SELECT substring(emerge_id, 1,2) as site_id, null as concept_id,
+    unit_concept_as_text AS concept_code,
+    'M' as src_table,
+    'unit_concept_as_text' as field
+    FROM main_main.emerge_consort_gira_src_emerge_measurement_ex_release_20260127
+    WHERE unit_concept_id is null and unit_concept_as_text is not null
+)
+
+SELECT distinct * 
+FROM id_join_concepts 
+LEFT JOIN main_omop.CONCEPT AS concept
+ON id_join_concepts.concept_id = concept.concept_id
+where concept_name is null
+
+union
+
+SELECT distinct * 
+FROM code_m_units_concepts 
+LEFT JOIN main_omop.CONCEPT AS concept
+ON code_m_units_concepts.concept_id = concept.concept_id
+where concept_name is null
+
+    
+     """
+)
+# table.to_csv('meas_not_in_athena.csv')
+
+table
+
+# +
+table = execute(
+    """
+
+    SELECT distinct gender_concept_id AS concept_id,
+    'emerge_consort_gira_src_emerge_person_ex_release_20260123' as src_table,
+    'gender' as "field",
+    care_site_name
+    FROM main_main.emerge_consort_gira_src_emerge_person_ex_release_20260123
+    LEFT JOIN (select * from main_omop.CONCEPT where domain_id = 'Gender') AS g ON gender_concept_id = g.concept_id 
+    left join main_omop.care_site on substring(emerge_id, 1,2) = care_site_source_value
+    WHERE gender_concept_id IS NOT NULL
+    and concept_name is null
+
+    UNION
+
+    SELECT distinct race_concept_id AS concept_id,
+    'emerge_consort_gira_src_emerge_person_ex_release_20260123' as src_table,
+    'race' as "field",
+    care_site_name
+    FROM main_main.emerge_consort_gira_src_emerge_person_ex_release_20260123
+    LEFT JOIN (select * from main_omop.CONCEPT where domain_id = 'Race') AS g ON race_concept_id = g.concept_id 
+    left join main_omop.care_site on substring(emerge_id, 1,2) = care_site_source_value
+    WHERE race_concept_id IS NOT NULL
+    and concept_name is null
+
+
+    UNION
+
+    SELECT distinct ethnicity_concept_id AS concept_id,
+    'emerge_consort_gira_src_emerge_person_ex_release_20260123' as src_table,
+    'ethnicity' as "field",
+    care_site_name
+    
+    FROM main_main.emerge_consort_gira_src_emerge_person_ex_release_20260123
+    LEFT JOIN (select * from main_omop.CONCEPT where domain_id = 'Ethnicity') AS g ON ethnicity_concept_id = g.concept_id 
+    left join main_omop.care_site on substring(emerge_id, 1,2) = care_site_source_value
+    WHERE ethnicity_concept_id IS NOT NULL
+    and concept_name is null
+    order by concept_id
+
+    
+     """
+)
+# table.to_csv('demographics_column_mismatch.csv')
+
+table
+
+# +
+table = execute(
+    """
+   WITH id_join_concepts as (
+   SELECT distinct measurement_concept_id AS src_concept_id,
+    measurement_concept_name as src_concept_name,
+    'BMI' as src_table,
+    'measurement_concept_id' as "field",
+    care_site_name
+    FROM main_main.emerge_consort_gira_src_emerge_bmi_ex_release_20260128
+    left join main_omop.care_site on substring(emerge_id, 1,2) = care_site_source_value
+    WHERE measurement_concept_id IS NOT NULL
+
+    UNION
+
+    SELECT distinct unit_concept_id AS src_concept_id,
+    unit_concept_name as src_concept_name,
+    'BMI' as src_table,
+    'unit_concept_id' as "field",
+    care_site_name
+    FROM main_main.emerge_consort_gira_src_emerge_bmi_ex_release_20260128
+    left join main_omop.care_site on substring(emerge_id, 1,2) = care_site_source_value
+    WHERE unit_concept_id IS NOT NULL
+    
+)
+
+SELECT * 
+FROM id_join_concepts 
+LEFT JOIN main_omop.CONCEPT AS concept
+ON id_join_concepts.src_concept_id = concept.concept_id
+where concept.concept_code is null
+   
+     """
+)
+# table.to_csv('bmi_not_in_Athena.csv')
+
+table
+
+
+# +
+table = execute(
+    """
+   WITH id_join_concepts as (
+
+
+    SELECT distinct unit_concept_id AS src_concept_id,
+    unit_concept_name as src_concept_name,
+    'BMI' as src_table,
+    'unit_concept_id' as "field",
+    care_site_name
+    FROM main_main.emerge_consort_gira_src_emerge_bmi_ex_release_20260128
+    left join main_omop.care_site on substring(emerge_id, 1,2) = care_site_source_value
+    WHERE unit_concept_id IS NOT NULL 
+    and unit_concept_name = 'centimeter'
+    
+)
+
+SELECT * 
+FROM id_join_concepts 
+LEFT JOIN main_omop.CONCEPT AS concept
+ON id_join_concepts.src_concept_id = concept.concept_id
+-- where concept.concept_code is null
+order by src_concept_id, concept_name
+     """
+)
+# table.to_csv('bmi_drill_down_centimeter.csv')
+
+table
 # -
 
+table = execute(
+    """
+    with
+code_concepts as (
+    SELECT distinct
+    icd_code AS concept_code,
+    'emerge_consort_gira_src_emerge_icd_ex_release_20260129' as src_table,
+    care_site_name
+    FROM main_main.emerge_consort_gira_src_emerge_icd_ex_release_20260129
+    left join main_omop.care_site on substring(emerge_id, 1,2) = care_site_source_value
+    WHERE icd_code IS NOT NULL
+)
+
+SELECT code_concepts.*
+FROM code_concepts 
+LEFT JOIN main_omop.CONCEPT AS concept
+ON code_concepts.concept_code = concept.concept_code 
+
+AND vocabulary_id LIKE 'ICD%'
+where concept_name is null
+order by care_site_name
+    
+     """
+)
+table.to_csv('icd_code_not_in_athena_ICD.csv')
+table
+
+# +
 
 
+table = execute(
+    """
+    with
+code_concepts as (
+    SELECT distinct
+    cpt_code AS concept_code,
+    'emerge_consort_gira_src_emerge_cpt_ex_release_20260129' as src_table,
+    care_site_name
+    FROM main_main.emerge_consort_gira_src_emerge_cpt_ex_release_20260129
+    left join main_omop.care_site on substring(emerge_id, 1,2) = care_site_source_value
+    WHERE cpt_code IS NOT NULL
+)
 
+SELECT code_concepts.*
+FROM code_concepts 
+LEFT JOIN main_omop.CONCEPT AS concept
+ON code_concepts.concept_code = concept.concept_code 
+AND vocabulary_id LIKE 'CPT4'
+where concept_name is null
+order by care_site_name
+    
+     """
+)
+
+# table.to_csv('cpt_code_not_in_athena_CPT.csv')
+
+table
+# -
+
+table = execute(
+    """
+    with
+code_concepts as (
+    SELECT distinct
+    unit_concept_id AS concept_code,
+    'emerge_consort_gira_src_emerge_bmi_ex_release_20260128' as src_table,
+    care_site_name
+    FROM main_main.emerge_consort_gira_src_emerge_bmi_ex_release_20260128
+    left join main_omop.care_site on substring(emerge_id, 1,2) = care_site_source_value
+    WHERE unit_concept_id is not null and unit_concept_name is null
+)
+
+SELECT code_concepts.*
+FROM code_concepts 
+LEFT JOIN main_omop.CONCEPT AS concept
+ON code_concepts.concept_code = concept.concept_code 
+where concept_name is null
+AND domain_id = 'Unit'
+order by care_site_name
+    
+     """
+)
+table
 
 
 
