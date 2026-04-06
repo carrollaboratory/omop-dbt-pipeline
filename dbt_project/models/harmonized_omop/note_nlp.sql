@@ -1,5 +1,5 @@
 {{ config(materialized='table', schema = 'omop') }}
-
+with source as (
     select
     null::integer as "note_nlp_id",
     null::integer as "note_id",
@@ -15,4 +15,10 @@
     null::text as "term_exists",
     null::text as "term_temporal",
     null::text as "term_modifiers"
+    FROM {{ ref('hidden') }}
     
+)
+select 
+    * 
+from source
+limit 0

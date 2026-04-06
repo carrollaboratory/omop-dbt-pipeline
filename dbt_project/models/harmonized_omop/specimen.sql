@@ -1,5 +1,5 @@
 {{ config(materialized='table') }}
-
+with source as (
     select
     null::integer as "specimen_id",
     null::integer as "person_id",
@@ -16,4 +16,10 @@
     null::text as "unit_source_value",
     null::text as "anatomic_site_source_value",
     null::text as "disease_status_source_value"
+    FROM {{ ref('hidden') }}
     
+)
+select 
+    * 
+from source
+limit 0
