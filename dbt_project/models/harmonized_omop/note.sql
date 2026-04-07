@@ -1,5 +1,5 @@
 {{ config(materialized='table', schema = 'omop') }}
-
+with source as (
     select
     null::integer as "note_id",
     null::integer as "person_id",
@@ -17,4 +17,10 @@
     null::text as "note_source_value",
     null::integer as "note_event_id",
     null::integer as "note_event_field_concept_id"
+    FROM {{ ref('hidden') }}
     
+)
+select 
+    * 
+from source
+limit 0

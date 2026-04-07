@@ -1,0 +1,72 @@
+version: 2
+
+models:
+  - name: emerge_consort_gira_lookup_concepts
+    description: "A lookup table that aggregates all concept IDs from various source tables to pre-filter the main concept table."
+    columns:
+      - name: concept_id
+        description: "The concept ID from one of the source tables."
+        tests:
+          - not_null
+      - name: concept_code
+        description: "The corresponding concept code, if available."
+      - name: src_table
+        description: "An indicator of which source table the concept came from (e.g., 'M' for measurement, 'P' for person)."
+      - name: concept_id_1
+        description: "Renamed concept_id for joining."
+      - name: concept_code_1
+        description: "Renamed concept_code for joining."
+      - name: concept_name
+        description: "Name of the concept."
+      - name: domain_id
+        description: "The domain of the concept (e.g., 'Gender', 'Race')."
+      - name: vocabulary_id
+        description: "The vocabulary the concept belongs to (e.g., 'SNOMED', 'LOINC')."
+      - name: concept_class_id
+        description: "The classification of the concept."
+
+  - name: emerge_consort_gira_lookup_exclusion
+    description: "A table that identifies 'emerge_id's present in measurement/BMI/CPT/ICD tables but not in the person table."
+    columns:
+      - name: emerge_id
+        description: "The eMERGE identifier that exists in other data tables but is missing from the person table."
+        tests:
+          - not_null
+          - unique
+
+  - name: emerge_consort_gira_lookup_standards
+    description: "A lookup table to map source concepts to their standard concept equivalents."
+    columns:
+      - name: src_concept_id
+        description: "The original source concept ID."
+        tests:
+          - not_null
+      - name: src_concept_code
+        description: "The original source concept code."
+      - name: src_table
+        description: "The source table indicator."
+      - name: s_concept_id
+        description: "The standard concept ID that the source concept maps to."
+      - name: s_concept_code
+        description: "The standard concept code."
+      - name: relationship_id
+        description: "The relationship between the source and standard concept (e.g., 'Maps to')."
+      - name: vocabulary_id
+        description: "The vocabulary of the standard concept."
+      - name: domain_id
+        description: "The domain of the standard concept."
+
+  - name: emerge_consort_gira_lookup_visits
+    description: "A table to generate unique visit_occurrence_ids for events across different source tables."
+    columns:
+      - name: emerge_id
+        description: "The eMERGE identifier for the patient."
+        tests:
+          - not_null
+      - name: encounter_id
+        description: "The original encounter ID from the source system."
+      - name: visit_occurrence_id
+        description: "A generated unique identifier for the visit occurrence."
+        tests:
+          - not_null
+          - unique

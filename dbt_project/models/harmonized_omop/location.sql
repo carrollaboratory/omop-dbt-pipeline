@@ -1,5 +1,5 @@
 {{ config(materialized='table', schema = 'omop') }}
-
+with source as (
     select
     null::integer as "location_id",
     null::text as "address_1",
@@ -13,4 +13,10 @@
     null::text as "country_source_value",
     null::float as "latitude",
     null::float as "longitude"
+    FROM {{ ref('hidden') }}
     
+)
+select 
+    * 
+from source
+limit 0  

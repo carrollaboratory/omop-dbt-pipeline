@@ -1,0 +1,16 @@
+seeds:
+  - name: care_site_seed
+    description: "A seed file containing care site information."
+    config:
+      schema: seeds
+      materialized: seed
+    columns:
+      - name: site_id
+        description: "The unique identifier for the care site."
+        tests:
+          - not_null
+          - unique
+      - name: site_name
+        description: "The name of the care site."
+        tests:
+          - not_null

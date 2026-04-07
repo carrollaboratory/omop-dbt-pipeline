@@ -1,5 +1,5 @@
 {{ config(materialized='table', schema = 'omop') }}
-
+with source as (
     select
     null::integer as "visit_detail_id",
     null::integer as "person_id",
@@ -20,4 +20,10 @@
     null::integer as "preceding_visit_detail_id",
     null::integer as "parent_visit_detail_id",
     null::integer as "visit_occurrence_id"
+    FROM {{ ref('hidden') }}
     
+)
+select 
+    * 
+from source
+limit 0
