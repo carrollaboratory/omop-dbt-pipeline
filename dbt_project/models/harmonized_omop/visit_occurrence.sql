@@ -20,4 +20,7 @@
         null::text as "discharged_to_source_value",
         null::integer as "preceding_visit_occurrence_id",
         encounter_id::integer as "x_encounter_id"
+        vo.age_at_event::integer as "x_age_at_event",
     from {{ ref('emerge_consort_gira_int_visit_occurrences') }}
+    left join {{ ref('emerge_consort_gira_int_visit_occurrences') }} as vo
+    using (emerge_id, encounter_id)

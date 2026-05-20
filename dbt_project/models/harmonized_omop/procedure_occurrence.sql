@@ -16,6 +16,7 @@ with base as (
     icd_code::text as "procedure_source_value",
     icd_id::integer as "procedure_source_concept_id",
     null::text as "modifier_source_value",
+    vo.age_at_event::integer as "x_age_at_event",
     icd.row_id::text as "x_row_id",
     encounter_id::integer as "x_encounter_id",
     gira_ror::text as "x_gira_ror"
@@ -42,6 +43,7 @@ with base as (
     null::text as "procedure_source_value",
     cpt_id::integer as "procedure_source_concept_id",
     null::text as "modifier_source_value",
+    vo.age_at_event::integer as "x_age_at_event",
     cpt.row_id::text as "x_row_id",
     encounter_id::integer as "x_encounter_id",
     gira_ror::text as "x_gira_ror"
