@@ -21,6 +21,7 @@ with base as (
     null::text as "value_source_value",
     null::integer as "observation_event_id",
     null::integer as "obs_event_field_concept_id",
+    vo.age_at_event::integer as "x_age_at_event",
     meas.row_id::integer as "x_row_id",
     meas.encounter_id::integer as "x_encounter_id",
     gira_ror::text as "x_gira_ror"
@@ -51,6 +52,7 @@ with base as (
     null::text as "value_source_value",
     null::integer as "observation_event_id",
     null::integer as "obs_event_field_concept_id",
+    vo.age_at_event::integer as "x_age_at_event",
     cpt.row_id::integer as "x_row_id",
     encounter_id::integer as "x_encounter_id",
     gira_ror::text as "x_gira_ror"
@@ -81,6 +83,7 @@ with base as (
     null::text as "value_source_value",
     null::integer as "observation_event_id",
     null::integer as "obs_event_field_concept_id",
+    vo.age_at_event::integer as "x_age_at_event",
     icd.row_id::text as "x_row_id",
     encounter_id::integer as "x_encounter_id",
     gira_ror::text as "x_gira_ror"

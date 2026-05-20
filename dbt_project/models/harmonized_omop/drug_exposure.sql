@@ -24,6 +24,7 @@ with base as (
     cpt_id::integer as "drug_source_concept_id",
     null::text as "route_source_value",
     null::text as "dose_unit_source_value",
+    vo.age_at_event::integer as "x_age_at_event",
     cpt.row_id::integer as "x_row_id",
     encounter_id::integer as "x_encounter_id",
     gira_ror::text as "x_gira_ror"

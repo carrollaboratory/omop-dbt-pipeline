@@ -21,6 +21,7 @@ select
     null::integer as "unit_concept_id",
     null::text as "unit_source_value",
     null::integer as "unit_source_concept_id",
+    vo.age_at_event::integer as "x_age_at_event",
     cpt.row_id::integer as "x_row_id",
     encounter_id::integer as "x_encounter_id",
     gira_ror::text as "x_gira_ror"
