@@ -1,0 +1,41 @@
+name: "omop_dbt_pipeline"
+version: "1.0.0"
+profile: "omop-dbt-pipeline"
+
+model-paths: ["models"]
+macro-paths: ["macros"]
+seed-paths: ["seeds"]
+snapshot-paths: ["snapshots"]
+
+clean-targets:
+  - "target"
+  - "dbt_packages"
+
+vars:
+  dbt_date:
+    time_zone: "America/Chicago"
+
+models:
+  omop_dbt_pipeline:
+    vocabulary:
+      +materialized: table
+      +enabled: true
+      +schema: vocab
+      +tags: vocabulary
+    emerge:
+      emerge_eiv_to_ehr_for_external_release_on_anvil:
+        +materialized: table
+        +enabled: true
+        +tags: emerge_eiv_to_ehr_for_external_release_on_anvil
+        src:
+          +schema: 6mo_src
+          +tags: 6mo_src
+        int:
+          +schema: 6mo_int
+          +tags: 6mo_int
+        lookups:
+          +schema: 6mo_lookups
+          +tags: 6mo_lookups
+        target_omop:
+          +schema: omop
+          +tags: omop
