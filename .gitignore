@@ -9,3 +9,4 @@ _study_data
 
 __pycache__
 *.csv
+.Rproj.user
