@@ -9,4 +9,7 @@ _study_data
 
 __pycache__
 *.csv
-.Rproj.user
+*.R*
+duckdb
+*Sql.txt
+
