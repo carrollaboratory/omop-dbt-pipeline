@@ -1,0 +1,26 @@
+
+    
+
+    create  table
+      "dbt"."dev_202609_omop"."fact_relationship__dbt_tmp"
+  
+    
+    as (
+      
+with source as (
+    select
+    null::integer as "domain_concept_id_1",
+    null::integer as "fact_id_1",
+    null::integer as "domain_concept_id_2",
+    null::integer as "fact_id_2",
+    null::integer as "relationship_concept_id"
+    FROM "dbt"."dev_202609_vocab"."hidden"
+    
+)
+select 
+    * 
+from source
+limit 0
+    );
+    
+  

@@ -1,0 +1,25 @@
+
+    
+
+    create  table
+      "dbt"."dev_202609_omop"."cohort__dbt_tmp"
+  
+    
+    as (
+      
+with source as (
+    select
+    null::integer as "cohort_definition_id",
+    null::integer as "subject_id",
+    null::text as "cohort_start_date",
+    null::text as "cohort_end_date"
+    FROM "dbt"."dev_202609_vocab"."hidden"
+    
+)
+select 
+    * 
+from source
+limit 0
+    );
+    
+  

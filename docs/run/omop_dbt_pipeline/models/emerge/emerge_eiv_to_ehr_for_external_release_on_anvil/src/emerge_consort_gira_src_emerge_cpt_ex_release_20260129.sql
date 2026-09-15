@@ -1,0 +1,29 @@
+
+    
+
+    create  table
+      "dbt"."dev_202609_6mo_src"."emerge_consort_gira_src_emerge_cpt_ex_release_20260129__dbt_tmp"
+  
+    
+    as (
+      
+        
+SELECT
+    ROW_NUMBER() OVER () AS "src_index",
+    "EMERGE_ID"::TEXT AS "emerge_id",
+    "AGE_AT_EVENT"::TEXT AS "age_at_event",
+    "CPT_CODE"::TEXT AS "cpt_code",
+    "ROW_ID"::TEXT AS "row_id",
+    "ENCOUNTER_ID"::TEXT AS "encounter_id",
+    "GIRA_ROR"::TEXT AS "gira_ror"
+FROM read_csv('../../_study_data/consort_gira/eMERGE_6_Month_Data_External_Release/eMERGE_CPT_Ex_Release_20260129.csv', AUTO_DETECT=FALSE, HEADER=TRUE, nullstr = ["null", "NA"], columns={
+        'EMERGE_ID': 'VARCHAR',
+        'AGE_AT_EVENT': 'VARCHAR',
+        'CPT_CODE': 'VARCHAR',
+        'ROW_ID': 'VARCHAR',
+        'ENCOUNTER_ID': 'VARCHAR',
+        'GIRA_ROR': 'VARCHAR'
+    })
+    );
+    
+  
