@@ -1,5 +1,5 @@
 {{ config(materialized='table', alias='cdm_source') }}
-
+-- Created for running the data quality dashboard
 select
 'eMERGE Consortium GIRA eIV' as "cdm_source_name",
 'eIV' as "cdm_source_abbreviation",
