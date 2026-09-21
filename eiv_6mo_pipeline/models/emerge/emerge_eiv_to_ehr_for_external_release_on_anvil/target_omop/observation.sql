@@ -3,7 +3,7 @@ with base as (
     select distinct
     emerge_id::integer as "person_id",
     s_observation_concept_id::integer as "observation_concept_id", -- concept_id from joined table
-    date_add(vo.birth_date, INTERVAL (vo.age_at_event) YEAR)::date as "observation_date", 
+    date_add(vo.birth_date, INTERVAL (vo.age_at_event_split) YEAR)::date as "observation_date", 
     null::timestamp as "observation_datetime", 
     32817::integer as "observation_type_concept_id",
     value_as_number::float as "value_as_number",
@@ -34,7 +34,7 @@ with base as (
     select  distinct
     emerge_id::integer as "person_id",
     s_observation_concept_id::integer as "observation_concept_id", -- concept_id from joined table
-    date_add(vo.birth_date, INTERVAL (vo.age_at_event) YEAR)::date as "observation_date",
+    date_add(vo.birth_date, INTERVAL (vo.age_at_event_split) YEAR)::date as "observation_date",
     null::timestamp as "observation_datetime", 
     32817::integer as "observation_type_concept_id", -- Code for EHR is consistent type
     null::float as "value_as_number",
@@ -65,7 +65,7 @@ with base as (
     select distinct
     emerge_id::integer as "person_id",
     s_observation_concept_id::integer as "observation_concept_id", -- concept_id from joined table
-    date_add(vo.birth_date, INTERVAL (vo.age_at_event) YEAR)::date as "observation_date", 
+    date_add(vo.birth_date, INTERVAL (vo.age_at_event_split) YEAR)::date as "observation_date", 
     null::timestamp as "observation_datetime", 
     32817::integer as "observation_type_concept_id", -- required but unknown in the data
     null::float as "value_as_number",

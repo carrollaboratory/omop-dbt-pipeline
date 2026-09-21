@@ -3,6 +3,7 @@
 select
     emerge_id,
     age_at_event,
+    age_at_event_split,
     measurement_concept_id,
     mci.s_concept_id as "s_measurement_concept_id",
     mci.s_concept_code as "s_measurement_concept_code",

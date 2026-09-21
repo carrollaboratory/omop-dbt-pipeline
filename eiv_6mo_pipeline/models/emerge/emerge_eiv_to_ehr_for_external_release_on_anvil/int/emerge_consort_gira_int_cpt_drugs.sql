@@ -3,6 +3,7 @@
     SELECT
     emerge_id,
     age_at_event,
+    age_at_event_split,
     cpt_code,
     mci.src_concept_id as "cpt_id", -- concept_id for the cpt_code. This could be non-standard. 
     mci.s_concept_id as "s_drug_concept_id",
