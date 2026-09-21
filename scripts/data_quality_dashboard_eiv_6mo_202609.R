@@ -4,7 +4,7 @@
 ### For more about the dqd and this script: https://data.ohdsi.org/DataQualityDashboard/
 
 
-# DQD 1 - R imports
+# DQD 1 - R imports 
 # ---------------------------------------------------------------
 if(!require("duckdb")) {install.packages("duckdb")}
 if(!require("DataQualityDashboard")) {remotes::install_github("OHDSI/DataQualityDashboard")}
