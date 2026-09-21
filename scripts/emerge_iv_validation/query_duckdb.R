@@ -341,6 +341,42 @@ vocabularies <- execute(
 )
 print(vocabularies)
 
+
+print("=== VOCABULARY - None vs '' result ===")
+investigate_vocab_nones <- execute(
+  "SELECT 
+   distinct(vocabulary_id),
+   count(*) as n
+   FROM dev_202609_6mo_lookups.emerge_consort_gira_lookup_concepts  c
+   WHERE vocabulary_id NOT IN ('Race', 'LOINC', 'ICD10', 'UCUM', 'SNOMED', 'ICD10PCS', 'Gender', 'ICD10CN', 'ICD9CM', 'ICD9Proc', 'ICD9ProcCN', 'Ethnicity', 'CPT4', 'ICD10CM')
+   OR vocabulary_id IS NULL
+   GROUP BY vocabulary_id;
+")
+print(investigate_vocab_nones)
+
+print("=== VOCABULARY - None vs '' result ===")
+investigate_vocab_nones2 <- execute(
+  "SELECT 
+   *
+   FROM dev_202609_6mo_lookups.emerge_consort_gira_lookup_concepts  c
+   WHERE 
+   --vocabulary_id NOT IN ('Race', 'LOINC', 'ICD10', 'UCUM', 'SNOMED', 'ICD10PCS', 'Gender', 'ICD10CN', 'ICD9CM', 'ICD9Proc', 'ICD9ProcCN', 'Ethnicity', 'CPT4', 'ICD10CM')
+   --OR 
+   vocabulary_id IS NULL
+")
+print(investigate_vocab_nones2)
+
+
+print("=== VOCABULARY - In harmonized data ===")
+investigate_vocab_nones3 <- execute(
+  " 
+  SELECT
+  distinct(measurement_concept_id,measurement_source_concept_id,measurement_type_concept_id,operator_concept_id,value_as_concept_id,unit_concept_id)
+  FROM dev_202609_omop.measurement   c
+
+")
+print(investigate_vocab_nones3)
+
 # TODO: Add tests to a 'src_data/concept_info' model (int?) to assert domains 
 # are expected as well as vocabularies.
 # EX: If the src measurement table is refreshed and now has a few procedures, 
@@ -357,7 +393,6 @@ for (t in table_names$table_name) {
     has_person_id <- execute(sprintf(
       "SELECT COUNT(*) AS col_count
        FROM information_schema.columns
-       WHERE table_schema = 'dev_202609_omop'
        AND table_name = '%s'
        AND column_name = 'person_id'", t
     ))$col_count[1]
