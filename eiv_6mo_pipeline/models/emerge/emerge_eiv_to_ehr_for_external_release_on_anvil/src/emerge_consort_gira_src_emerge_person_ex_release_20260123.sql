@@ -24,4 +24,3 @@ SELECT
     "RACE_CONCEPT_ID"::TEXT AS "race_concept_id",
     "ETHNICITY_CONCEPT_ID"::TEXT AS "ethnicity_concept_id"
 FROM raw_data
-WHERE year_of_birth IS NOT NULL

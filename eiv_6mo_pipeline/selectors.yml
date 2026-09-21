@@ -1,0 +1,7 @@
+selectors:
+  - name: emerge_consort_gira_refresh
+    description: Refresh Emerge models with all upstream dependencies in DAG order.
+    definition:
+      method: tag
+      value: emerge_eiv_to_ehr_for_external_release_on_anvil
+      parents: true
