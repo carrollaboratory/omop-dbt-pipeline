@@ -16,9 +16,7 @@ FROM read_csv('../../_study_data/consort_gira/eMERGE_6_Month_Data_External_Relea
                     })
 )       
 SELECT 
-    ROW_NUMBER() OVER (
-        ORDER BY "EMERGE_ID", "YEAR_OF_BIRTH", "GENDER_CONCEPT_ID", "RACE_CONCEPT_ID", "ETHNICITY_CONCEPT_ID", "WITHDRAWAL_STATUS"
-    ) AS "src_index",
+    ROW_NUMBER() OVER () AS "src_index",
     "EMERGE_ID"::TEXT AS "emerge_id",
     "WITHDRAWAL_STATUS"::TEXT AS "withdrawal_status",
     "YEAR_OF_BIRTH"::TEXT AS "year_of_birth",

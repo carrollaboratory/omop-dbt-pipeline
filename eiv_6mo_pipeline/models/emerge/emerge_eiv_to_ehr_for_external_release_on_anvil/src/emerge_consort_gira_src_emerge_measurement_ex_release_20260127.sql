@@ -23,9 +23,7 @@ FROM read_csv('../../_study_data/consort_gira/eMERGE_6_Month_Data_External_Relea
                     })
 )
 SELECT 
-    ROW_NUMBER() OVER (
-        ORDER BY "ROW_ID", "EMERGE_ID", "ENCOUNTER_ID", "MEASUREMENT_CONCEPT_ID"
-    ) AS "src_index",
+    ROW_NUMBER() OVER () AS "src_index",
     "EMERGE_ID"::TEXT AS "emerge_id",
     "AGE_AT_EVENT"::TEXT AS "age_at_event",
     split_part("AGE_AT_EVENT"::TEXT, '.', 1)::TEXT AS "age_at_event_split",
