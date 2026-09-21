@@ -1,0 +1,30 @@
+name: legacy_dbt_project
+version: 1.0.0
+profile: omop-dbt-pipeline
+model-paths:
+- models
+macro-paths:
+- macros
+seed-paths:
+- seeds
+snapshot-paths:
+- snapshots
+clean-targets:
+- target
+- dbt_packages
+vars:
+  dbt_date:time_zone: America/Chicago
+models:
+  +materialized: table
+  legacy_dbt_project:
+    a_vocabulary20260305:
+      +schema: omop
+    gwas:
+      +schema: gwas
+      +tag: ['gwas_mods']
+    emergeseq:
+      +schema: emergeseq
+      +tag: ['emergeseq_mods']
+    pgrnseq:
+      +schema: pgrnseq
+      +tag: ['pgrnseq_mods']
