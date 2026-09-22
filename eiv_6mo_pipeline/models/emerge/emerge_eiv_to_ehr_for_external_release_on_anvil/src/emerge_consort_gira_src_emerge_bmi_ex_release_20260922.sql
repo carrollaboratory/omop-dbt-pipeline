@@ -2,25 +2,24 @@
         
 WITH raw_data AS (
 SELECT
-    *
-FROM read_csv('../../_study_data/consort_gira/eMERGE_6_Month_Data_External_Release/eMERGE_Measurement_Ex_Release_20260127.csv',
+*
+FROM read_csv('../../_study_data/consort_gira/eMERGE_6_Month_Data_External_Release/eMERGE_BMI_Ex_Release_20260922.csv',
                 AUTO_DETECT=FALSE, HEADER=TRUE,
                 nullstr = ["null", "NA", "N/A", "NULL"],
                 columns={
                         'EMERGE_ID': 'VARCHAR',
                         'AGE_AT_EVENT': 'VARCHAR',
                         'MEASUREMENT_CONCEPT_ID': 'VARCHAR',
+                        'MEASUREMENT_CONCEPT_NAME': 'VARCHAR',
                         'VALUE_AS_NUMBER': 'VARCHAR',
-                        'VALUE_AS_TEXT': 'VARCHAR',
-                        'RANGE_LOW': 'VARCHAR',
-                        'RANGE_HIGH': 'VARCHAR',
-                        'RANGE_FLAG': 'VARCHAR',
                         'UNIT_CONCEPT_ID': 'VARCHAR',
-                        'UNIT_CONCEPT_AS_TEXT': 'VARCHAR',
+                        'UNIT_CONCEPT_NAME': 'VARCHAR',
+                        'BMI_Z_SCORE': 'VARCHAR',
                         'ROW_ID': 'VARCHAR',
                         'ENCOUNTER_ID': 'VARCHAR',
                         'GIRA_ROR': 'VARCHAR'
                     })
+
 )
 SELECT 
     ROW_NUMBER() OVER () AS "src_index",
@@ -28,15 +27,13 @@ SELECT
     "AGE_AT_EVENT"::TEXT AS "age_at_event",
     split_part("AGE_AT_EVENT"::TEXT, '.', 1)::TEXT AS "age_at_event_split",
     "MEASUREMENT_CONCEPT_ID"::TEXT AS "measurement_concept_id",
+    "MEASUREMENT_CONCEPT_NAME"::TEXT AS "measurement_concept_name",
     "VALUE_AS_NUMBER"::TEXT AS "value_as_number",
-    "VALUE_AS_TEXT"::TEXT AS "value_as_text",
-    "RANGE_LOW"::TEXT AS "range_low",
-    "RANGE_HIGH"::TEXT AS "range_high",
-    "RANGE_FLAG"::TEXT AS "range_flag",
     "UNIT_CONCEPT_ID"::TEXT AS "unit_concept_id",
-    "UNIT_CONCEPT_AS_TEXT"::TEXT AS "unit_concept_as_text",
+    "UNIT_CONCEPT_NAME"::TEXT AS "unit_concept_name",
+    "BMI_Z_SCORE"::TEXT AS "bmi_z_score",
     "ROW_ID"::TEXT AS "row_id",
     "ENCOUNTER_ID"::TEXT AS "encounter_id",
-    "GIRA_ROR"::TEXT AS "gira_ror", 
+    "GIRA_ROR"::TEXT AS "gira_ror"
 FROM raw_data
 WHERE age_at_event IS NOT NULL

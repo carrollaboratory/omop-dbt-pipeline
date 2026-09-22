@@ -13,7 +13,7 @@ SELECT
     encounter_id,
     gira_ror,
     src_index,
-FROM {{ ref('emerge_consort_gira_src_emerge_icd_ex_release_20260129') }} src
+FROM {{ ref('emerge_consort_gira_src_emerge_icd_ex_release_20260922') }} src
     JOIN (SELECT -- JOIN used to drop rows that are not domain 'Condition'
           s_concept_id, s_concept_code, src_concept_id, src_concept_code , domain_id
           FROM {{ ref('emerge_consort_gira_lookup_standards') }} 

@@ -8,7 +8,7 @@ with cleaned_race_ethnicity as (
         concept_value as race_ethnicity_concept_id,
         concept_type as original_column_flag,
         domain_id
-    from {{ ref('emerge_consort_gira_src_emerge_person_ex_release_20260123') }}
+    from {{ ref('emerge_consort_gira_src_emerge_person_ex_release_20260401') }}
          unpivot (concept_value for concept_type in (race_concept_id, ethnicity_concept_id)) p
     left join (
         select
@@ -31,7 +31,7 @@ select
     -- Aggregate to ensure one row per participant
     MAX(case when cre.domain_id = 'Race' then cre.s_concept_id else '0' end) as s_race_concept_id,
     MAX(case when cre.domain_id = 'Ethnicity' then cre.s_concept_id else '0' end) as s_ethnicity_concept_id
-from (select *, coalesce(CAST(src.year_of_birth as integer),1970) as null_cleaned_yob from {{ ref('emerge_consort_gira_src_emerge_person_ex_release_20260123') }} src
+from (select *, coalesce(CAST(src.year_of_birth as integer),1970) as null_cleaned_yob from {{ ref('emerge_consort_gira_src_emerge_person_ex_release_20260401') }} src
 left join cleaned_race_ethnicity cre
     on src.emerge_id = cre.emerge_id
     and cre.s_concept_id is not null
