@@ -4,4 +4,4 @@ omop-dbt-pipeline:
     dev:
       schema: dev_202609
       type: duckdb
-      path: ~/dbt.duckdb_eiv_6mo
+      path: ~/dbt.duckdb_eiv_6mo_aae

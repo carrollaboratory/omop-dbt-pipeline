@@ -15,7 +15,7 @@ FROM read_csv('../../_study_data/consort_gira/eMERGE_6_Month_Data_External_Relea
                         'ENCOUNTER_ID': 'VARCHAR',
                         'GIRA_ROR': 'VARCHAR'
                     })
-                            
+)                            
                             
 SELECT 
     ROW_NUMBER() OVER () AS "src_index",

@@ -5,7 +5,7 @@ SELECT
 *
 FROM read_csv('../../_study_data/consort_gira/eMERGE_6_Month_Data_External_Release/eMERGE_Person_Ex_Release_20260401.csv', 
                 AUTO_DETECT=FALSE, HEADER=TRUE,
-                nullstr = ["null", "NA", "N/A", "NULL"],
+                nullstr = ["null", "NA", "N/A", "NULL", ''],
                 columns={
                         'EMERGE_ID': 'VARCHAR',
                         'WITHDRAWAL_STATUS': 'VARCHAR',

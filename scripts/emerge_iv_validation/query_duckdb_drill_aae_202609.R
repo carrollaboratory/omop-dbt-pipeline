@@ -24,7 +24,7 @@ if (bucket == "") {
 
 # 3. Connect to DuckDB -------------------------------------------------------
 
-drv <- duckdb(dbdir = "~/dbt.duckdb_eiv_6mo")
+drv <- duckdb(dbdir = "~/dbt.duckdb_eiv_6mo_aae")
 con <- dbConnect(drv)
 
 # 4. Helper Function to Execute Queries ------------------------------------
@@ -69,7 +69,7 @@ aae_as_years <- execute(
               ELSE 0
           END AS has_integer
 
-      FROM dev_202609_6mo_src.emerge_consort_gira_src_emerge_measurement_ex_release_20260127
+      FROM dev_202609_6mo_src.emerge_consort_gira_src_emerge_measurement_ex_release_20260922
   ) AS p
 
   LEFT JOIN dev_202609_6mo_int.emerge_consort_gira_int_care_sites s
@@ -104,10 +104,10 @@ aae_as_days <- execute(
           CAST(age_at_event AS INTEGER) AS aae
 
 
-      --FROM dev_202609_6mo_src.emerge_consort_gira_src_emerge_measurement_ex_release_20260127
-      --FROM dev_202609_6mo_src.emerge_consort_gira_src_emerge_icd_ex_release_20260129
-      --FROM dev_202609_6mo_src.emerge_consort_gira_src_emerge_cpt_ex_release_20260129
-      FROM dev_202609_6mo_src.emerge_consort_gira_src_emerge_bmi_ex_release_20260128
+      --FROM dev_202609_6mo_src.emerge_consort_gira_src_emerge_measurement_ex_release_20260922
+      --FROM dev_202609_6mo_src.emerge_consort_gira_src_emerge_icd_ex_release_20260922
+      --FROM dev_202609_6mo_src.emerge_consort_gira_src_emerge_cpt_ex_release_20260922
+      FROM dev_202609_6mo_src.emerge_consort_gira_src_emerge_bmi_ex_release_20260922
 
 
   ) AS p
@@ -132,10 +132,10 @@ table_names <- execute(
       AVG(CAST(age_at_event AS FLOAT)) AS avg_aae,
       AVG(CAST(age_at_event  AS FLOAT) / 365)  AS avg_aae_divide_by_365
 
-      -- FROM dev_202609_6mo_src.emerge_consort_gira_src_emerge_measurement_ex_release_20260127
-      -- FROM dev_202609_6mo_src.emerge_consort_gira_src_emerge_icd_ex_release_20260129
-      -- FROM dev_202609_6mo_src.emerge_consort_gira_src_emerge_cpt_ex_release_20260129
-      FROM dev_202609_6mo_src.emerge_consort_gira_src_emerge_bmi_ex_release_20260128
+      -- FROM dev_202609_6mo_src.emerge_consort_gira_src_emerge_measurement_ex_release_20260922
+      -- FROM dev_202609_6mo_src.emerge_consort_gira_src_emerge_icd_ex_release_20260922
+      -- FROM dev_202609_6mo_src.emerge_consort_gira_src_emerge_cpt_ex_release_20260922
+      FROM dev_202609_6mo_src.emerge_consort_gira_src_emerge_bmi_ex_release_20260922
 
   LEFT JOIN dev_202609_6mo_int.emerge_consort_gira_int_care_sites s
       ON SUBSTRING(emerge_id, 1, 2) = s.site_id
@@ -155,7 +155,7 @@ table_names <- execute(
   "
   SELECT
 distinct age_at_event
-  FROM dev_202609_6mo_src.emerge_consort_gira_src_emerge_measurement_ex_release_20260127
+  FROM dev_202609_6mo_src.emerge_consort_gira_src_emerge_measurement_ex_release_20260922
 
   LEFT JOIN dev_202609_6mo_int.emerge_consort_gira_int_care_sites s
       ON SUBSTRING(emerge_id, 1, 2) = s.site_id
@@ -184,7 +184,7 @@ aae_as_days <- execute(
       SELECT
           *,
           CAST(age_at_event AS INTEGER) AS aae
-      FROM dev_202609_6mo_src.emerge_consort_gira_src_emerge_measurement_ex_release_20260127
+      FROM dev_202609_6mo_src.emerge_consort_gira_src_emerge_measurement_ex_release_20260922
   ) AS p
 
   LEFT JOIN dev_202609_6mo_int.emerge_consort_gira_int_care_sites s
@@ -279,7 +279,7 @@ aae_as_days <- execute(
       SELECT
           *,
           CAST(age_at_event AS INTEGER) AS aae
-      FROM dev_202609_6mo_src.emerge_consort_gira_src_emerge_measurement_ex_release_20260127
+      FROM dev_202609_6mo_src.emerge_consort_gira_src_emerge_measurement_ex_release_20260922
   ) AS p
 
   LEFT JOIN dev_202609_6mo_int.emerge_consort_gira_int_care_sites s

@@ -1,9 +1,8 @@
 # ============================================================================
-# Tool to query tables in the duckdb database.
-# Create new cells for study specific analysis/validation.
+#Created to ensure the decimals in the src data are not being dropped within the dbt pipeline. 
+#Otherwise - handy code.
 # ============================================================================
 
-# 1. Setup and Dependencies ------------------------------------------------
 
 if(!require("duckdb")) install.packages("duckdb")
 if(!require("DBI")) install.packages("DBI")
@@ -15,19 +14,14 @@ library(DBI)
 library(tidyverse)
 library(openxlsx)
 
-# 2. Environment Setup -------------------------------------------------------
 
 bucket <- Sys.getenv("WORKSPACE_BUCKET")
 if (bucket == "") {
   bucket <- "bucket_placeholder"
 }
 
-# 3. Connect to DuckDB -------------------------------------------------------
-
 drv <- duckdb(dbdir = "~/dbt.duckdb_eiv_6mo")
 con <- dbConnect(drv)
-
-
 
 
 
