@@ -3,7 +3,7 @@ with base as (
     select
     emerge_id::integer as "person_id",
     s_procedure_concept_id::integer as "procedure_concept_id",
-    date_add(vo.birth_date, INTERVAL (vo.age_at_event) YEAR)::date as "procedure_date",
+    date_add(vo.birth_date, INTERVAL (vo.age_at_event_split) YEAR)::date as "procedure_date",
     null::timestamp as "procedure_datetime",
     null::text as "procedure_end_date",
     null::timestamp as "procedure_end_datetime",
@@ -30,7 +30,7 @@ with base as (
     select
     emerge_id::integer as "person_id",
     s_procedure_concept_id::integer as "procedure_concept_id",
-    date_add(vo.birth_date, INTERVAL (vo.age_at_event) YEAR)::date as "procedure_date",
+    date_add(vo.birth_date, INTERVAL (vo.age_at_event_split) YEAR)::date as "procedure_date",
     null::timestamp as "procedure_datetime",
     null::text as "procedure_end_date",
     null::timestamp as "procedure_end_datetime",

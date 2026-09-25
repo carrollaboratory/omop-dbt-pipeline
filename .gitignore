@@ -12,4 +12,6 @@ __pycache__
 *.R*
 duckdb
 *Sql.txt
+.user.yml
 
+.Rproj.user

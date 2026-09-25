@@ -24,7 +24,7 @@ if (bucket == "") {
 
 # 3. Connect to DuckDB -------------------------------------------------------
 
-drv <- duckdb(dbdir = "~/dbt.duckdb_eiv_6mo")
+drv <- duckdb(dbdir = "~/dbt.duckdb_eiv_6mo_aae")
 con <- dbConnect(drv)
 
 # 4. Helper Function to Execute Queries ------------------------------------
@@ -99,7 +99,7 @@ print("=== MEASUREMENT CONCEPT ANALYSIS ===")
 measurement_concepts <- execute(
   "WITH concept_meas as (
    SELECT *
-   FROM dev_202609_6mo_src.emerge_consort_gira_src_emerge_measurement_ex_release_20260127 meas_src
+   FROM dev_202609_6mo_src.emerge_consort_gira_src_emerge_measurement_ex_release_20260922 meas_src
    LEFT JOIN (SELECT
               concept_id as mci_concept_id,
               concept_code as mci_concept_code,
@@ -143,7 +143,7 @@ range_low_issues <- execute(
   "SELECT
    range_low,
    COUNT(*) AS row_count
-   FROM dev_202609_6mo_src.emerge_consort_gira_src_emerge_measurement_ex_release_20260127
+   FROM dev_202609_6mo_src.emerge_consort_gira_src_emerge_measurement_ex_release_20260922
    WHERE range_low IS NOT NULL
    AND TRY_CAST(range_low AS INTEGER) IS NULL
    GROUP BY range_low
@@ -159,7 +159,7 @@ range_high_issues <- execute(
   "SELECT
    range_high,
    COUNT(*) AS row_count
-   FROM dev_202609_6mo_src.emerge_consort_gira_src_emerge_measurement_ex_release_20260127
+   FROM dev_202609_6mo_src.emerge_consort_gira_src_emerge_measurement_ex_release_20260922
    WHERE range_high IS NOT NULL
    AND TRY_CAST(range_high AS INTEGER) IS NULL
    GROUP BY range_high
@@ -179,7 +179,7 @@ person_yob <- execute(
   "SELECT 
    SUM(CASE WHEN year_of_birth is not null then 1 else 0 end) as yob_exists,
    SUM(CASE WHEN year_of_birth is null then 1 else 0 end) as yob_null
-   FROM dev_202609_6mo_src.emerge_consort_gira_src_emerge_person_ex_release_20260123"
+   FROM dev_202609_6mo_src.emerge_consort_gira_src_emerge_person_ex_release_20260401"
 )
 print(person_yob)
 # TODO: yob is used for measurement.measurement_date. What to do when NULL?
@@ -194,7 +194,7 @@ print("=== BMI CONCEPT ANALYSIS ===")
 bmi_concepts <- execute(
   "WITH concept_meas as (
    SELECT *
-   FROM dev_202609_6mo_src.emerge_consort_gira_src_emerge_bmi_ex_release_20260128 meas_src
+   FROM dev_202609_6mo_src.emerge_consort_gira_src_emerge_bmi_ex_release_20260922 meas_src
    LEFT JOIN (SELECT
               concept_id as mci_concept_id,
               concept_code as mci_concept_code,
@@ -241,7 +241,7 @@ print("=== CPT CONCEPT ANALYSIS ===")
 cpt_concepts <- execute(
   "WITH concept_meas as (
    SELECT *
-   FROM dev_202609_6mo_src.emerge_consort_gira_src_emerge_cpt_ex_release_20260129 meas_src
+   FROM dev_202609_6mo_src.emerge_consort_gira_src_emerge_cpt_ex_release_20260922 meas_src
    LEFT JOIN (SELECT
               concept_id as mci_concept_id,
               concept_code as mci_concept_code,
@@ -288,7 +288,7 @@ print("=== ICD CONCEPT ANALYSIS ===")
 icd_concepts <- execute(
   "WITH concept_icd as (
    SELECT *
-   FROM dev_202609_6mo_src.emerge_consort_gira_src_emerge_icd_ex_release_20260129 icd_src
+   FROM dev_202609_6mo_src.emerge_consort_gira_src_emerge_icd_ex_release_20260922 icd_src
    LEFT JOIN (SELECT
               concept_id as ic_concept_id,
               concept_code as ic_concept_code,
@@ -341,6 +341,42 @@ vocabularies <- execute(
 )
 print(vocabularies)
 
+
+print("=== VOCABULARY - None vs '' result ===")
+investigate_vocab_nones <- execute(
+  "SELECT 
+   distinct(vocabulary_id),
+   count(*) as n
+   FROM dev_202609_6mo_lookups.emerge_consort_gira_lookup_concepts  c
+   WHERE vocabulary_id NOT IN ('Race', 'LOINC', 'ICD10', 'UCUM', 'SNOMED', 'ICD10PCS', 'Gender', 'ICD10CN', 'ICD9CM', 'ICD9Proc', 'ICD9ProcCN', 'Ethnicity', 'CPT4', 'ICD10CM')
+   OR vocabulary_id IS NULL
+   GROUP BY vocabulary_id;
+")
+print(investigate_vocab_nones)
+
+print("=== VOCABULARY - None vs '' result ===")
+investigate_vocab_nones2 <- execute(
+  "SELECT 
+   *
+   FROM dev_202609_6mo_lookups.emerge_consort_gira_lookup_concepts  c
+   WHERE 
+   --vocabulary_id NOT IN ('Race', 'LOINC', 'ICD10', 'UCUM', 'SNOMED', 'ICD10PCS', 'Gender', 'ICD10CN', 'ICD9CM', 'ICD9Proc', 'ICD9ProcCN', 'Ethnicity', 'CPT4', 'ICD10CM')
+   --OR 
+   vocabulary_id IS NULL
+")
+print(investigate_vocab_nones2)
+
+
+print("=== VOCABULARY - In harmonized data ===")
+investigate_vocab_nones3 <- execute(
+  " 
+  SELECT
+  distinct(measurement_concept_id,measurement_source_concept_id,measurement_type_concept_id,operator_concept_id,value_as_concept_id,unit_concept_id)
+  FROM dev_202609_omop.measurement   c
+
+")
+print(investigate_vocab_nones3)
+
 # TODO: Add tests to a 'src_data/concept_info' model (int?) to assert domains 
 # are expected as well as vocabularies.
 # EX: If the src measurement table is refreshed and now has a few procedures, 
@@ -357,7 +393,6 @@ for (t in table_names$table_name) {
     has_person_id <- execute(sprintf(
       "SELECT COUNT(*) AS col_count
        FROM information_schema.columns
-       WHERE table_schema = 'dev_202609_omop'
        AND table_name = '%s'
        AND column_name = 'person_id'", t
     ))$col_count[1]
@@ -444,7 +479,7 @@ withdrawal_by_site <- execute(
    sum(case when active_in_new_src_consent = 1 then 1 else 0 end) as active_in_new_src_consent,
     sum(case when active_in_harmonized_person = 1 then 1 else 0 end) as active_in_harmonized_person,
    count(*) as n_records
-   FROM dev_202609_6mo_src.emerge_consort_gira_src_emerge_person_ex_release_20260123 p
+   FROM dev_202609_6mo_src.emerge_consort_gira_src_emerge_person_ex_release_20260401 p
    LEFT JOIN dev_202609_6mo_int.emerge_consort_gira_int_care_sites s
      ON substring(p.emerge_id, 1, 2) = s.site_id
    LEFT JOIN (SELECT emerge_id, 1 as active_in_new_src_consent FROM dev_202609_6mo_src.emerge_consort_gira_src_emerge_6_month_consent_ds_20260731) ex
@@ -495,7 +530,7 @@ writeData(wb, "Table Dimensions", shape_df)
 
 # Save the workbook
 saveWorkbook(wb, "~/pipelines/_study_data/consort_gira/validation/analysis_results.xlsx", overwrite = TRUE)
-print("Results exported to results/analysis_results.xlsx")
+print("Results exported to ~/pipelines/_study_data/consort_gira/validation/analysis_results.xlsx")
 
 
 # dbDisconnect(con)

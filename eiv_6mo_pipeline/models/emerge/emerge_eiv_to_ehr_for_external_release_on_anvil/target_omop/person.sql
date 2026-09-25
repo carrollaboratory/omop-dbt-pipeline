@@ -16,7 +16,7 @@
     gender_concept_id::text as "gender_source_value",
     gender_concept_id::integer as "gender_source_concept_id",
     null::text as "race_source_value",
-    null::integer as "race_source_concept_id",
+    race_concept_id::integer as "race_source_concept_id",
     null::text as "ethnicity_source_value",
-    null::integer as "ethnicity_source_concept_id",
+    ethnicity_concept_id::integer as "ethnicity_source_concept_id",
     from {{ ref('emerge_consort_gira_int_person_persons') }}

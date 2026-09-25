@@ -4,7 +4,7 @@ with base as (
     select
     emerge_id::integer as "person_id",
     s_condition_concept_id::integer as "condition_concept_id",
-    date_add(vo.birth_date, INTERVAL (vo.age_at_event) YEAR)::date as "condition_start_date",
+    date_add(vo.birth_date, INTERVAL (vo.age_at_event_split) YEAR)::date as "condition_start_date",
     null::timestamp as "condition_start_datetime",
     null::text as "condition_end_date",
     null::timestamp as "condition_end_datetime",

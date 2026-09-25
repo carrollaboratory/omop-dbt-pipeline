@@ -4,7 +4,7 @@ with base as (
     select
     emerge_id::integer as "person_id",
     s_measurement_concept_id::integer as "measurement_concept_id",
-    date_add(vo.birth_date, INTERVAL (vo.age_at_event) YEAR)::date as "measurement_date",
+    date_add(vo.birth_date, INTERVAL (vo.age_at_event_split) YEAR)::date as "measurement_date",
     null::timestamp as "measurement_datetime",
     null::text as "measurement_time",
     32817::integer as "measurement_type_concept_id",
@@ -37,7 +37,7 @@ with base as (
     select
     emerge_id::integer as "person_id",
     s_measurement_concept_id::integer as "measurement_concept_id",
-    date_add(vo.birth_date, INTERVAL (vo.age_at_event) YEAR)::date as "measurement_date",
+    date_add(vo.birth_date, INTERVAL (vo.age_at_event_split) YEAR)::date as "measurement_date",
     null::timestamp as "measurement_datetime",
     null::text as "measurement_time",
     32817::integer as "measurement_type_concept_id",
@@ -70,7 +70,7 @@ with base as (
     select
     emerge_id::integer as "person_id",
     s_measurement_concept_id::integer as "measurement_concept_id",
-    date_add(vo.birth_date, INTERVAL (vo.age_at_event) YEAR)::date as "measurement_date",
+    date_add(vo.birth_date, INTERVAL (vo.age_at_event_split) YEAR)::date as "measurement_date",
     null::timestamp as "measurement_datetime",
     null::text as "measurement_time",
     32817::integer as "measurement_type_concept_id", 
@@ -103,7 +103,7 @@ with base as (
     select
     emerge_id::integer as "person_id",
     s_measurement_concept_id::integer as "measurement_concept_id",
-    date_add(vo.birth_date, INTERVAL (vo.age_at_event) YEAR)::date as "measurement_date",
+    date_add(vo.birth_date, INTERVAL (vo.age_at_event_split) YEAR)::date as "measurement_date",
     null::timestamp as "measurement_datetime",
     null::text as "measurement_time",
     32817::integer as "measurement_type_concept_id", 

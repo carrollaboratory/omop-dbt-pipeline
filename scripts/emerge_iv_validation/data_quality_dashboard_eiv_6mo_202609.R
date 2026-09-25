@@ -18,9 +18,10 @@ library(tidyverse)
 library(DatabaseConnector)
 
 # DQD 2 - Connect to local db -----------------------------------------------------
+
 connectionDetails <- DatabaseConnector::createConnectionDetails(
     dbms="duckdb",
-    server = "~/dbt.duckdb_eiv_6mo"
+    server = "~/dbt.duckdb_eiv_6mo_aae"
   )
 con <- connect(connectionDetails)
 
@@ -102,24 +103,15 @@ ParallelLogger::launchLogViewer(logFileName = file.path(outputFolder, cdmSourceN
                                                         sprintf("log_DqDashboard_%s.txt", cdmSourceName)))
 
 
-# Push files to the workspace bucket --------------------------------------
-system2("gcloud", c("storage","cp","-r","~/legacy_emerge/output_20260825_emergeseq/", "$WORKSPACE_BUCKET/legacy_emerge_validation/emergeseq"))
-
-
-
-# Push this R script to the bucket --------------------------------------
-anal_path <- path.expand("~/legacy_emerge/dqd_legacy_emerge.R")
-system2("gcloud", c("storage","cp","-r", anal_path, "$WORKSPACE_BUCKET/legacy_emerge_validation/"))
-
-
 # Query the results table from DuckDB
 dqd_table_results <- execute(
-  "SELECT * FROM results_schema.dqdashboard_results"
+  "SELECT * FROM main.dqdashboard_results"
 )
+print(dqd_table_results)
 
 # Export to CSV
 write.csv(dqd_table_results, 
-          "results/dqd_results.csv",
+          "~/pipelines/_study_data/consort_gira/validation/dqd_results.csv",
           row.names = FALSE)
 
 print("✓ Results exported from SQL table")

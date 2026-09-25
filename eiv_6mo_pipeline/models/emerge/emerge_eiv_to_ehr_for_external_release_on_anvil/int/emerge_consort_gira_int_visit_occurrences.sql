@@ -1,20 +1,20 @@
 {{ config(materialized='table') }}
 
 with unioned as (
-    select emerge_id, encounter_id, age_at_event
-    from {{ ref('emerge_consort_gira_src_emerge_measurement_ex_release_20260127') }}
-    where emerge_id not in (select emerge_id from {{ ref('emerge_consort_gira_lookup_exclusion') }}) and age_at_event is not null
-    union
-    select emerge_id, encounter_id, age_at_event
-    from {{ ref('emerge_consort_gira_src_emerge_bmi_ex_release_20260128') }}
+    select emerge_id, encounter_id, age_at_event, age_at_event_split
+    from {{ ref('emerge_consort_gira_src_emerge_measurement_ex_release_20260922') }}
     where emerge_id not in (select emerge_id from {{ ref('emerge_consort_gira_lookup_exclusion') }})
     union
-    select emerge_id, encounter_id, age_at_event
-    from {{ ref('emerge_consort_gira_src_emerge_cpt_ex_release_20260129') }}
+    select emerge_id, encounter_id, age_at_event, age_at_event_split
+    from {{ ref('emerge_consort_gira_src_emerge_bmi_ex_release_20260922') }}
     where emerge_id not in (select emerge_id from {{ ref('emerge_consort_gira_lookup_exclusion') }})
     union
-    select emerge_id, encounter_id, age_at_event
-    from {{ ref('emerge_consort_gira_src_emerge_icd_ex_release_20260129') }}
+    select emerge_id, encounter_id, age_at_event, age_at_event_split
+    from {{ ref('emerge_consort_gira_src_emerge_cpt_ex_release_20260922') }}
+    where emerge_id not in (select emerge_id from {{ ref('emerge_consort_gira_lookup_exclusion') }})
+    union
+    select emerge_id, encounter_id, age_at_event, age_at_event_split
+    from {{ ref('emerge_consort_gira_src_emerge_icd_ex_release_20260922') }}
     where emerge_id not in (select emerge_id from {{ ref('emerge_consort_gira_lookup_exclusion') }})
     
    ),
